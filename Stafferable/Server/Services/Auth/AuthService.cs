@@ -1,7 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Stafferable.Server.Data;
 using Stafferable.Shared;
 using Stafferable.Shared.Auth;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
 
 namespace Stafferable.Server.Services.Auth
@@ -9,10 +12,12 @@ namespace Stafferable.Server.Services.Auth
     public class AuthService : IAuthService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _config;
 
-        public AuthService(ApplicationDbContext context)
+        public AuthService(ApplicationDbContext context, IConfiguration config)
         {
             _context = context;
+            _config = config;
         }
 
         public async Task<ServiceResponse<int>> Register(User user, string password)
@@ -60,10 +65,33 @@ namespace Stafferable.Server.Services.Auth
             }
             else
             {
-                response.Data = "token";
+                response.Data = CreateToken(user);
             }
 
             return response;
+        }
+
+        private string CreateToken(User user)
+        {
+            List<Claim> claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                new Claim(ClaimTypes.Name, user.Email)
+            };
+
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_config.GetSection("AppSettings:Token").Value));
+
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+            var token = new JwtSecurityToken(
+                    claims: claims,
+                    expires: DateTime.Now.AddDays(28),
+                    signingCredentials: creds
+                );
+
+            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return jwt;
         }
 
         private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
