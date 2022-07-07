@@ -1,5 +1,6 @@
 ﻿@page "/register"
 @using Stafferable.Shared
+@inject IAuthServiceClient AuthService
 
 <PageTitle>Register</PageTitle>
 
@@ -21,13 +22,24 @@
     </div>
     <button type="submit" class="btn btn-primary">Register</button>
     <ValidationSummary />
+    <div class="@messageCssClass">
+        @message
+    </div>
 </EditForm>
 
 @code {
     UserRegister user = new UserRegister();
+    string message = string.Empty;
+    string messageCssClass = string.Empty;
 
     async Task HandleRegistration()
     {
-        Console.WriteLine($"Register user with email: {user.Email}");
+        var result = await AuthService.Register(user);
+        message = result.Message;
+        if (result.Success)
+            messageCssClass = "text-success";
+        else
+            messageCssClass = "text-danger";
+
     }
 }
