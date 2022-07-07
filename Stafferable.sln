@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stafferable.Server", "Stafferable\Server\Stafferable.Server.csproj", "{A642ED12-7FE5-48E5-B0BA-D7C91DF90114}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stafferable.Server", "Stafferable\Server\Stafferable.Server.csproj", "{A642ED12-7FE5-48E5-B0BA-D7C91DF90114}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stafferable.Client", "Stafferable\Client\Stafferable.Client.csproj", "{D4129924-527A-4B3F-9A48-6CE3887E3255}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stafferable.Client", "Stafferable\Client\Stafferable.Client.csproj", "{D4129924-527A-4B3F-9A48-6CE3887E3255}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Stafferable.Shared", "Stafferable\Shared\Stafferable.Shared.csproj", "{CFE2AFF6-BEC8-4E15-B946-6E3165B4880D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Stafferable.Shared", "Stafferable\Shared\Stafferable.Shared.csproj", "{CFE2AFF6-BEC8-4E15-B946-6E3165B4880D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
