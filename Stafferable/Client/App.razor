@@ -3,8 +3,12 @@
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
                 <NotAuthorized>
-                    <h3>You're not allowed to see this page.</h3>
-                    <h5>Please <a href="login">login</a> or <a href="register">register</a> for a new account.</h5>
+                    <h3>You're not allowed to this page.</h3>
+                    <h5>What to do?</h5>
+                    <ul>
+                        <li><h5>Please <a href="login">login</a> or <a href="register">register</a> for a new account.</h5></li>
+                        <li><h5>Ask your administrator to grant access.</h5></li>
+                    </ul>
                 </NotAuthorized>
             </AuthorizeRouteView>
             <FocusOnNavigate RouteData="@routeData" Selector="h1" />
