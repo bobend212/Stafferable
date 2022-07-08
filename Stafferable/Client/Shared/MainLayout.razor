@@ -6,7 +6,11 @@
     </div>
 
     <main>
-        <div class="top-row px-4">
+        <div class="top-row px-4" style="display:flex; justify-content:space-between;">
+            <p style="align-self: flex-end">@DateTime.Now.ToLongDateString()</p>
+            <AuthorizeView>
+                <p style="align-self: flex-end">Logged as: @context.User.Identity.Name</p>
+            </AuthorizeView>
             <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
         </div>
 
