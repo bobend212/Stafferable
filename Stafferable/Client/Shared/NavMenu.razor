@@ -4,7 +4,7 @@
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">Stafferable</a>
+        <a class="navbar-brand" href=""><i class="fa fa-2x fa-ravelry"></i> Stafferable</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -15,26 +15,26 @@
     <nav class="flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
+                <span><i class="fa fa-lg fa-home"></i> Home</span>
             </NavLink>
         </div>
         <AuthorizeView>
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="counter">
-                        <span class="oi oi-plus" aria-hidden="true"></span> Counter
+                        <span><i class="fa fa-lg fa-file"></i> Counter</span>
                     </NavLink>
                 </div>
 
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="fetchdata">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
+                        <span><i class="fa fa-lg fa-file"></i> Fetch data</span>
                     </NavLink>
                 </div>
 
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="projects">
-                        <span class="oi oi-list-rich" aria-hidden="true"></span> Projects [admin]
+                        <span><i class="fa fa-lg fa-briefcase"></i> Projects [admin]</span>
                     </NavLink>
                 </div>
             </Authorized>
@@ -42,14 +42,14 @@
         <hr style="color:white" />
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="register">
-                <span class="oi oi-plus" aria-hidden="true"></span> Register
+                <span><i class="fa fa-lg fa-user-plus"></i> Register</span>
             </NavLink>
         </div>
         <AuthorizeView>
             <NotAuthorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="login">
-                        <span class="oi oi-account-login" aria-hidden="true"></span> Login
+                        <span><i class="fa fa-lg fa-sign-in"></i> Login</span>
                     </NavLink>
                 </div>
             </NotAuthorized>
@@ -57,7 +57,7 @@
         <AuthorizeView>
             <Authorized>
                 <div class="nav-item px-3">
-                    <button type="button" class="btn btn-light btn-block" style="width:100%" @onclick="Logout">Logout</button>
+                    <button type="button" class="btn btn-light btn-block" style="width:100%" @onclick="Logout"><i class="fa fa-lg fa-sign-out"></i> Logout</button>
                 </div>
             </Authorized>
         </AuthorizeView>
