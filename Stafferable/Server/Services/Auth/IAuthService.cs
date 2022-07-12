@@ -15,6 +15,6 @@ namespace Stafferable.Server.Services.Auth
 
         Task<ServiceResponse<bool>> ChangeProfile(int userId, UserChangeProfile model);
 
-        Task<ServiceResponse<User>> GetSingleUser(int userId);
+        Task<ServiceResponse<UserGet>> GetSingleUser(int userId);
     }
 }

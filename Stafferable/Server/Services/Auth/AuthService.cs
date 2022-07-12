@@ -13,11 +13,13 @@ namespace Stafferable.Server.Services.Auth
     {
         private readonly ApplicationDbContext _context;
         private readonly IConfiguration _config;
+        private readonly IMapper _mapper;
 
-        public AuthService(ApplicationDbContext context, IConfiguration config)
+        public AuthService(ApplicationDbContext context, IConfiguration config, IMapper mapper)
         {
             _context = context;
             _config = config;
+            _mapper = mapper;
         }
 
         public async Task<ServiceResponse<int>> Register(User user, string password)
@@ -118,19 +120,20 @@ namespace Stafferable.Server.Services.Auth
             return new ServiceResponse<bool> { Data = true, Message = "User Profile has been changed." };
         }
 
-        public async Task<ServiceResponse<User>> GetSingleUser(int userId)
+        public async Task<ServiceResponse<UserGet>> GetSingleUser(int userId)
         {
             var user = await _context.Users.FindAsync(userId);
             if (user == null)
             {
-                return new ServiceResponse<User>
+                return new ServiceResponse<UserGet>
                 {
                     Success = false,
                     Message = "User not found."
                 };
             }
+            var userDto = _mapper.Map<UserGet>(user);
 
-            return new ServiceResponse<User> { Data = user, Message = "User Found." };
+            return new ServiceResponse<UserGet> { Data = userDto, Message = "User Found." };
         }
 
         private string CreateToken(User user)

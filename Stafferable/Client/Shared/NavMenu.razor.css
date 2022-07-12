@@ -40,14 +40,21 @@
         line-height: 3rem;
     }
 
-.nav-item ::deep a.active {
-    background-color: rgba(255,255,255,0.25);
-    color: white;
-}
+        .nav-item ::deep a.active {
+            background-color: rgba(255,255,255,0.25);
+            color: white;
+        }
 
-.nav-item ::deep a:hover {
-    background-color: rgba(255,255,255,0.1);
-    color: white;
+        .nav-item ::deep a:hover {
+            background-color: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+.sidebar-logout {
+    position: absolute;
+    display: inline-block;
+    bottom: 0;
+    width: 100%;
 }
 
 @media (min-width: 641px) {

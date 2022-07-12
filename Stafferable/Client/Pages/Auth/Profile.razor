@@ -2,16 +2,18 @@
 @inject IAuthServiceClient AuthService
 @attribute [Authorize]
 
+<PageTitle>Stafferable - Profile</PageTitle>
 
 <div class="col d-flex justify-content-center">
     <div class="card text-center shadow p-3 mb-5 bg-white rounded" style="width: 50rem;">
         <div class="mt-3"><i class="fa fa-5x fa-user-circle-o"></i></div>
         <div class="card-body">
             <h3 class="card-title">@model.FName @model.LName</h3>
-            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This card has even longer content than the first to show that equal height action.</p>
-            <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+            <p class="card-text">@model.Title (@model.Department)</p>
+            <p class="card-text">@model.Email / @model.Phone</p>
+            <p class="card-text"><small class="text-muted">Last edited: @model.DateEdited?.ToString("dd MMMM yyyy HH:mm")</small></p>
             <a href="change-password" class="btn btn-outline-danger">Change Password</a>
-            <a href="#" class="btn btn-outline-info">Edit Profile</a>
+            <a href="change-profile" class="btn btn-outline-info">Edit Profile</a>
         </div>
     </div>
 </div>

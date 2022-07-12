@@ -1,7 +1,9 @@
+global using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Stafferable.Server;
 using Stafferable.Server.Data;
 using Stafferable.Server.Services.Auth;
 
@@ -59,6 +61,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 ValidateAudience = false
             };
         });
+builder.Services.AddAutoMapper(typeof(AutoMapperProfiles).Assembly);
 
 var app = builder.Build();
 

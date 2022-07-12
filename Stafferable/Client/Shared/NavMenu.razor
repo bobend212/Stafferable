@@ -1,6 +1,7 @@
 ﻿@inject ILocalStorageService LocalStorage
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IToaster Toaster
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -60,13 +61,15 @@
                 </div>
             </NotAuthorized>
         </AuthorizeView>
-        <AuthorizeView>
-            <Authorized>
-                <div class="nav-item px-3">
-                    <button type="button" class="btn btn-light btn-block" style="width:100%" @onclick="Logout"><i class="fa fa-lg fa-sign-out"></i> Logout</button>
-                </div>
-            </Authorized>
-        </AuthorizeView>
+        <div class="sidebar-logout">
+            <AuthorizeView>
+                <Authorized>
+                    <div class="nav-item px-3">
+                        <button type="button" class="btn btn-light btn-block" style="width:100%" @onclick="Logout"><i class="fa fa-lg fa-sign-out"></i> Logout</button>
+                    </div>
+                </Authorized>
+            </AuthorizeView>
+        </div>
     </nav>
 </div>
 
@@ -85,5 +88,6 @@
         await LocalStorage.RemoveItemAsync("authToken");
         await AuthenticationStateProvider.GetAuthenticationStateAsync();
         NavigationManager.NavigateTo("");
+        Toaster.Info("Logged out.");
     }
 }

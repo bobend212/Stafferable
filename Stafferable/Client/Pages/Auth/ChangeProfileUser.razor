@@ -1,0 +1,87 @@
+﻿@page "/change-profile"
+@inject IAuthServiceClient AuthService
+@inject NavigationManager NavigationManager
+@inject IToaster Toaster
+@attribute [Authorize]
+<div class="container">
+
+    <h3>Change Profile</h3>
+
+    <EditForm Model="request" OnValidSubmit="ChangeProfile">
+        <DataAnnotationsValidator />
+        <div class="row">
+            <div class="col">
+                <div class="mb-3">
+                    <label for="password">First Name</label>
+                    <InputText @bind-Value="request.FName" class="form-control" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="mb-3">
+                    <label for="password">Last Name</label>
+                    <InputText @bind-Value="request.LName" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="mb-3">
+                    <label for="password">Email <small class="text-muted">(ask your administrator)</small></label>
+                    <InputText @bind-Value="user.Email" class="form-control" disabled />
+                </div>
+            </div>
+            <div class="col">
+                <div class="mb-3">
+                    <label for="password">Phone</label>
+                    <InputText @bind-Value="request.Phone" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="mb-3">
+                    <label for="password">Title</label>
+                    <InputText @bind-Value="request.Title" class="form-control" />
+                </div>
+            </div>
+            <div class="col">
+                <div class="mb-3">
+                    <label for="password">Department</label>
+                    <InputText @bind-Value="request.Department" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <div style="display: flex; justify-content: space-between">
+            <button type="submit" class="btn btn-primary" disabled="@(!context.Validate())">Submit</button>
+            <button type="button" class="btn btn-outline-warning" @onclick="ReturnToProfilePage">Cancel</button>
+        </div>
+        <ValidationSummary />
+    </EditForm>
+</div>
+
+@code {
+    UserChangeProfile request = new UserChangeProfile();
+    User user = new User();
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = (await AuthService.GetSingleUser()).Data;
+        request.FName = user.FName;
+        request.LName = user.LName;
+        request.Phone = user.Phone;
+        request.Title = user.Title;
+        request.Department = user.Department;
+    }
+
+    private async Task ChangeProfile()
+    {
+        var result = await AuthService.ChangeProfile(request);
+        NavigationManager.NavigateTo("profile");
+        Toaster.Success(result.Message);
+    }
+
+    private async Task ReturnToProfilePage()
+    {
+        NavigationManager.NavigateTo("profile");
+    }
+}

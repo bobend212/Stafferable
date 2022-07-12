@@ -3,6 +3,7 @@
 @inject ILocalStorageService LocalStorage
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IToaster Toaster
 
 <h3>Login</h3>
 
@@ -19,9 +20,6 @@
     <button type="submit" class="btn btn-primary">Login</button>
     <ValidationSummary />
 </EditForm>
-<div class="text-danger">
-    @errorMessage
-</div>
 
 @code {
     private UserLogin user = new UserLogin();
@@ -31,16 +29,17 @@
     private async Task HandleLogin()
     {
         var result = await AuthService.Login(user);
-        if(result.Success)
+        if (result.Success)
         {
-            errorMessage = string.Empty;
             await LocalStorage.SetItemAsync("authToken", result.Data);
             await AuthenticationStateProvider.GetAuthenticationStateAsync();
             NavigationManager.NavigateTo("");
+            Toaster.Success("Logged in.");
         }
         else
         {
-            errorMessage = result.Message;
+            Toaster.Error(result.Message);
+            //errorMessage = result.Message;
         }
     }
 }

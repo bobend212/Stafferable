@@ -30,6 +30,12 @@ namespace Stafferable.Client.Services.Auth
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
 
+        public async Task<ServiceResponse<bool>> ChangeProfile(UserChangeProfile request)
+        {
+            var result = await _http.PostAsJsonAsync("api/auth/change-profile", request);
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
+        }
+
         public async Task<ServiceResponse<User>> GetSingleUser()
         {
             var result = await _http.GetFromJsonAsync<ServiceResponse<User>>($"/api/Auth/single-user");
