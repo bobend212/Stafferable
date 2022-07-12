@@ -12,5 +12,7 @@ namespace Stafferable.Server.Services.Auth
         Task<ServiceResponse<string>> Login(string email, string password);
 
         Task<ServiceResponse<bool>> ChangePassword(int userId, string newPassword);
+
+        Task<ServiceResponse<bool>> ChangeProfile(int userId, UserChangeProfile model);
     }
 }

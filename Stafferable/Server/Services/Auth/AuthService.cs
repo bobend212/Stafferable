@@ -87,10 +87,35 @@ namespace Stafferable.Server.Services.Auth
 
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
+            user.DateEdited = DateTime.Now;
 
             await _context.SaveChangesAsync();
 
             return new ServiceResponse<bool> { Data = true, Message = "Password has been changed." };
+        }
+
+        public async Task<ServiceResponse<bool>> ChangeProfile(int userId, UserChangeProfile model)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return new ServiceResponse<bool>
+                {
+                    Success = false,
+                    Message = "User not found."
+                };
+            }
+
+            user.FName = model.FName;
+            user.LName = model.LName;
+            user.Title = model.Title;
+            user.Phone = model.Phone;
+            user.Department = model.Department;
+            user.DateEdited = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+
+            return new ServiceResponse<bool> { Data = true, Message = "User Profile has been changed." };
         }
 
         private string CreateToken(User user)

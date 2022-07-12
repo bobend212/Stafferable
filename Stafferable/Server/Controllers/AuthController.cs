@@ -60,5 +60,19 @@ namespace Stafferable.Server.Controllers
 
             return Ok(response);
         }
+
+        [HttpPost("change-profile"), Authorize]
+        public async Task<ActionResult<ServiceResponse<bool>>> ChangeProfile(UserChangeProfile model)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var response = await _authService.ChangeProfile(int.Parse(userId), model);
+
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
     }
 }
