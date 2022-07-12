@@ -11,7 +11,10 @@
             <h3 class="card-title">@model.FName @model.LName</h3>
             <p class="card-text">@model.Title (@model.Department)</p>
             <p class="card-text">@model.Email / @model.Phone</p>
-            <p class="card-text"><small class="text-muted">Last edited: @model.DateEdited?.ToString("dd MMMM yyyy HH:mm")</small></p>
+            @if (@model.DateEdited != null)
+            {
+                <p class="card-text"><small class="text-muted">Last edited: @model.DateEdited?.ToString("dd MMMM yyyy HH:mm")</small></p>
+            }
             <a href="change-password" class="btn btn-outline-danger">Change Password</a>
             <a href="change-profile" class="btn btn-outline-info">Edit Profile</a>
         </div>

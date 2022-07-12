@@ -23,7 +23,12 @@ namespace Stafferable.Server.Controllers
         {
             var response = await _authService.Register(new User
             {
-                Email = request.Email
+                Email = request.Email,
+                FName = request.FName,
+                LName = request.LName,
+                Title = request.Title,
+                Phone = request.Phone,
+                Department = request.Department,
             }, request.Password);
 
             if (!response.Success)
