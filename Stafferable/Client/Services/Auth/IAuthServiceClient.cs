@@ -10,5 +10,7 @@ namespace Stafferable.Client.Services.Auth
         Task<ServiceResponse<string>> Login(UserLogin request);
 
         Task<ServiceResponse<bool>> ChangePassword(UserChangePassword request);
+
+        Task<ServiceResponse<User>> GetSingleUser();
     }
 }

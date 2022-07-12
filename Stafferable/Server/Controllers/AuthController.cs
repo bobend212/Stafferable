@@ -74,5 +74,19 @@ namespace Stafferable.Server.Controllers
 
             return Ok(response);
         }
+
+        [HttpGet("single-user")]
+        public async Task<ActionResult<ServiceResponse<User>>> GetSingleUser()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var response = await _authService.GetSingleUser(int.Parse(userId));
+
+            if (!response.Success)
+            {
+                return BadRequest();
+            }
+
+            return Ok(response);
+        }
     }
 }

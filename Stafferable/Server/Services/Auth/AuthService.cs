@@ -118,6 +118,21 @@ namespace Stafferable.Server.Services.Auth
             return new ServiceResponse<bool> { Data = true, Message = "User Profile has been changed." };
         }
 
+        public async Task<ServiceResponse<User>> GetSingleUser(int userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return new ServiceResponse<User>
+                {
+                    Success = false,
+                    Message = "User not found."
+                };
+            }
+
+            return new ServiceResponse<User> { Data = user, Message = "User Found." };
+        }
+
         private string CreateToken(User user)
         {
             List<Claim> claims = new List<Claim>

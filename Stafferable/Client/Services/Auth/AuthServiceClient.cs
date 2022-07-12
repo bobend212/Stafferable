@@ -29,5 +29,11 @@ namespace Stafferable.Client.Services.Auth
             var result = await _http.PostAsJsonAsync("api/auth/change-password", request.Password);
             return await result.Content.ReadFromJsonAsync<ServiceResponse<bool>>();
         }
+
+        public async Task<ServiceResponse<User>> GetSingleUser()
+        {
+            var result = await _http.GetFromJsonAsync<ServiceResponse<User>>($"/api/Auth/single-user");
+            return result;
+        }
     }
 }
