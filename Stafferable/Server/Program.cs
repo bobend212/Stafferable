@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using Stafferable.Server;
 using Stafferable.Server.Data;
 using Stafferable.Server.Services.Auth;
+using Stafferable.Server.Services.Timesheet;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +17,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddNewtonsoftJson(options =>
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+);
 builder.Services.AddRazorPages();
 //builder.Services.AddSwaggerGen();
 builder.Services.AddSwaggerGen(c =>
@@ -50,6 +54,8 @@ builder.Services.AddSwaggerGen(c =>
 
 //services
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ITimesheetService, TimesheetService>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {

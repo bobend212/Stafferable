@@ -1,4 +1,6 @@
-﻿namespace Stafferable.Shared.Auth
+﻿using Stafferable.Shared.Timesheet;
+
+namespace Stafferable.Shared.Auth
 {
     public class User
     {
@@ -17,5 +19,7 @@
         public string Phone { get; set; } = string.Empty;
         public string Department { get; set; } = string.Empty;
         //
+
+        public List<TimesheetCard> TimesheetCards { get; set; } = new List<TimesheetCard>();
     }
 }
