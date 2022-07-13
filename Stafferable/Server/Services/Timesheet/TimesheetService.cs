@@ -13,7 +13,6 @@ namespace Stafferable.Server.Services.Timesheet
         {
             _context = context;
         }
-
         public async Task<ServiceResponse<List<TimesheetCard>>> GetTimesheetCardsByLoggedUser(int userId)
         {
             var response = new ServiceResponse<List<TimesheetCard>>();
@@ -37,6 +36,14 @@ namespace Stafferable.Server.Services.Timesheet
             }
 
             return response;
+        }
+
+        public async Task<ServiceResponse<TimesheetCard>> PostTimesheetCard(TimesheetCard model)
+        {
+            _context.TimesheetCards.Add(model);
+            await _context.SaveChangesAsync();
+
+            return new ServiceResponse<TimesheetCard> { Data = model, Message = "Timesheet Card created!" };
         }
     }
 }

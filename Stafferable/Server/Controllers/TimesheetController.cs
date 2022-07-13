@@ -22,11 +22,29 @@ namespace Stafferable.Server.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var response = await _timesheetService.GetTimesheetCardsByLoggedUser(int.Parse(userId));
+            return Ok(response);
+        }
 
-            //if (!response.Success)
-            //{
-            //    return BadRequest();
-            //}
+        [HttpPost("post-timesheet-card")]
+        public async Task<ActionResult<ServiceResponse<TimesheetCard>>> PostTimesheetCard(TimesheetCardPost request)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var newTimesheetCard = new TimesheetCard
+            {
+                CustomName = request.CustomName,
+                DateCreated = DateTime.Now,
+                StartDate = request.StartDate,
+                Status = request.Status,
+                TotalHours = request.TotalHours,
+                UserId = int.Parse(userId)
+            };
+
+            var response = await _timesheetService.PostTimesheetCard(newTimesheetCard);
+
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
 
             return Ok(response);
         }

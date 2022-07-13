@@ -6,5 +6,6 @@ namespace Stafferable.Client.Services.Timesheet
     public interface ITimesheetCardServiceClient
     {
         Task<ServiceResponse<List<TimesheetCard>>> GetTimesheetCardsByLoggedUser();
+        Task<ServiceResponse<TimesheetCard>> PostTimesheetCard(TimesheetCardPost request);
     }
 }

@@ -2,28 +2,83 @@
 @using Stafferable.Shared
 @using Stafferable.Shared.Timesheet
 @inject ITimesheetCardServiceClient TimesheetCardService
+@inject IToaster Toaster
+@attribute [Authorize]
 
-<h3>My Timesheets</h3>
+<div class="container">
+    <h3>Timesheets</h3>
+    <EditForm Model="request" OnValidSubmit="PostTimesheetCard">
+        <DataAnnotationsValidator />
 
-@if (timesheets != null)
-{
-    <ol>
-        @foreach (var timesheet in timesheets)
-        {
-            <li>@timesheet.CustomName / @timesheet.StartDate / hours: @timesheet.TotalHours</li>
-        }
+        <div class="row mb-3">
+            <div class="col-auto">
+                <label>Custom Name</label>
+                <InputText @bind-Value="request.CustomName" class="form-control" />
+            </div>
 
-    </ol>
-}
-else
-{
-    <h2>@xx.Message</h2>
-}
+            <div class="col-auto">
+                <label>Date</label>
+                <InputDate format-value="yyyy-MM-dd" @bind-Value="@request.StartDate" class="form-control" />
 
+            </div>
+
+            <div class="col-auto" style="display:flex; align-items: flex-end">
+                <button type="submit" class="btn btn-success">New Timesheet</button>
+            </div>
+        </div>
+
+        <ValidationSummary />
+    </EditForm>
+    <hr />
+    @if (timesheets != null)
+    {
+        @*        <ol>
+    @foreach (var timesheet in timesheets)
+    {
+    <li>@timesheet.CustomName / @timesheet.StartDate / hours: @timesheet.TotalHours</li>
+    }
+    </ol>*@
+
+        <table class="table table-sm table-bordered table-striped">
+            <caption>Total: @timesheets.Count</caption>
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Custom Name</th>
+                    <th scope="col">Date Created</th>
+                    <th scope="col">Start Date</th>
+                    <th scope="col">Total Hours</th>
+                    <th scope="col">Status</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var timesheet in timesheets)
+                {
+                    <tr>
+                        <th>@timesheet.TimesheetCardId</th>
+                        <th>@timesheet.CustomName</th>
+                        <th>@timesheet.DateCreated</th>
+                        <th>@timesheet.StartDate</th>
+                        <th>@timesheet.TotalHours</th>
+                        <th>@timesheet.Status</th>
+                        <th><button type="button" class="btn btn-light">Info</button></th>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <h2>@xx.Message</h2>
+    }
+
+</div>
 
 @code {
     List<TimesheetCard> timesheets = new List<TimesheetCard>();
     ServiceResponse<List<TimesheetCard>> xx;
+    TimesheetCardPost request = new TimesheetCardPost();
 
     protected override async Task OnInitializedAsync()
     {
@@ -32,6 +87,12 @@ else
         {
             timesheets = (await TimesheetCardService.GetTimesheetCardsByLoggedUser()).Data;
         }
+    }
 
+    private async Task PostTimesheetCard()
+    {
+        var result = await TimesheetCardService.PostTimesheetCard(request);
+        Toaster.Success(result.Message);
+        timesheets = (await TimesheetCardService.GetTimesheetCardsByLoggedUser()).Data;
     }
 }
