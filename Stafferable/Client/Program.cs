@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Sotsera.Blazor.Toaster.Core.Models;
 using Stafferable.Client;
+using Stafferable.Client.Services.Timesheet;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -24,5 +25,6 @@ builder.Services.AddOptions();
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 builder.Services.AddScoped<IAuthServiceClient, AuthServiceClient>();
+builder.Services.AddScoped<ITimesheetCardServiceClient, TimesheetCardServiceClient>();
 
 await builder.Build().RunAsync();

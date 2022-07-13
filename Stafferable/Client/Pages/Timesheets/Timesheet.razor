@@ -1,7 +1,37 @@
 ﻿@page "/timesheet"
+@using Stafferable.Shared
+@using Stafferable.Shared.Timesheet
+@inject ITimesheetCardServiceClient TimesheetCardService
 
-<h3>Timesheet</h3>
+<h3>My Timesheets</h3>
+
+@if (timesheets != null)
+{
+    <ol>
+        @foreach (var timesheet in timesheets)
+        {
+            <li>@timesheet.CustomName / @timesheet.StartDate / hours: @timesheet.TotalHours</li>
+        }
+
+    </ol>
+}
+else
+{
+    <h2>@xx.Message</h2>
+}
+
 
 @code {
+    List<TimesheetCard> timesheets = new List<TimesheetCard>();
+    ServiceResponse<List<TimesheetCard>> xx;
 
+    protected override async Task OnInitializedAsync()
+    {
+        xx = await TimesheetCardService.GetTimesheetCardsByLoggedUser();
+        if (xx != null)
+        {
+            timesheets = (await TimesheetCardService.GetTimesheetCardsByLoggedUser()).Data;
+        }
+
+    }
 }

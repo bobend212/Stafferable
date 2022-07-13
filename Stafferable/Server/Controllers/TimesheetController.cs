@@ -17,7 +17,7 @@ namespace Stafferable.Server.Controllers
             _timesheetService = timesheetService;
         }
 
-        [HttpGet]
+        [HttpGet("my-timesheets")]
         public async Task<ActionResult<ServiceResponse<List<TimesheetCard>>>> GetTimesheetCardsByLoggedUser()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
