@@ -66,7 +66,10 @@ namespace Stafferable.Server.Services.Timesheet
         {
             var response = new ServiceResponse<List<TimesheetRecord>>();
             var findCard = await _context.TimesheetCards.FirstOrDefaultAsync(x => x.TimesheetCardId == CardId);
-            var records = await _context.TimesheetRecords.Where(u => u.TimesheetCardId == CardId).ToListAsync();
+            var records = await _context.TimesheetRecords.Where(u => u.TimesheetCardId == CardId)
+                .OrderBy(x => x.WeekNo)
+                .ThenBy(x => x.Date)
+                .ToListAsync();
 
             if (findCard == null)
             {

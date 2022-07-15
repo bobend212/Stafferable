@@ -4,14 +4,41 @@
 
 <h3>Records</h3>
 
-@if(records != null)
+@if (records != null)
 {
-    <ol>
-    @foreach (var record in records)
-    {
-        <li>@record.Project</li>
-    }
-    </ol>
+    <MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
+          Items="@records"
+          Virtualize="false"
+          GroupBy="@_groupDefinition"
+          GroupHeaderStyle="background-color:var(--mud-palette-background-grey)"
+          GroupFooterClass="mb-4"
+          Dense="true"
+          MultiSelection="false"
+          Bordered="true">
+        <HeaderContent>
+            <MudTh></MudTh>
+            <MudTh Style="font-weight: bold">Date</MudTh>
+            <MudTh Style="font-weight: bold">Type</MudTh>
+            <MudTh Style="font-weight: bold">Project</MudTh>
+            <MudTh Style="text-align: right;font-weight: bold">Time</MudTh>
+        </HeaderContent>
+        <GroupHeaderTemplate>
+            <MudTh Class="mud-table-cell-custom-group" colspan="5">@($"Week: {context.Key}")</MudTh>
+        </GroupHeaderTemplate>
+        <RowTemplate>
+            <MudTd DataLabel=""></MudTd>
+            <MudTd DataLabel="Date">@context.Date.ToString("dd/MMM/yyyy")</MudTd>
+            <MudTd DataLabel="Type">@context.Type</MudTd>
+            <MudTd DataLabel="Project">@context.Project</MudTd>
+            <MudTd Style="text-align: right" DataLabel="Time">@context.Time</MudTd>
+        </RowTemplate>
+        <GroupFooterTemplate>
+            <MudTh Style="text-align: right" colspan="5">Total: @context.Items.Sum((e) => e.Time)</MudTh>
+        </GroupFooterTemplate>
+        <FooterContent>
+            <MudTh Style="text-align: right" colspan="5">Grand Total: xxx</MudTh>
+        </FooterContent>
+    </MudTable>
 }
 else
 {
@@ -29,4 +56,11 @@ else
     {
         records = (await TimesheetService.GetTimesheetRecordsByCard(CardId)).Data;
     }
+
+    private TableGroupDefinition<TimesheetRecord> _groupDefinition = new()
+        {
+            Indentation = false,
+            Expandable = false,
+            Selector = (e) => e.WeekNo
+        };
 }
