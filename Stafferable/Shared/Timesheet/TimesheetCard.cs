@@ -1,7 +1,7 @@
-﻿using Stafferable.Shared.Auth;
+﻿using Newtonsoft.Json;
+using Stafferable.Shared.Auth;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Newtonsoft.Json;
 
 namespace Stafferable.Shared.Timesheet
 {
@@ -20,6 +20,9 @@ namespace Stafferable.Shared.Timesheet
 
         [JsonIgnore]
         public User User { get; set; }
+
         public int UserId { get; set; }
+
+        public List<TimesheetRecord> TimesheetRecords { get; set; } = new List<TimesheetRecord>();
     }
 }

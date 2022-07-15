@@ -13,6 +13,7 @@ namespace Stafferable.Server.Services.Timesheet
         {
             _context = context;
         }
+
         public async Task<ServiceResponse<List<TimesheetCard>>> GetTimesheetCardsByLoggedUser(int userId)
         {
             var response = new ServiceResponse<List<TimesheetCard>>();
@@ -38,12 +39,52 @@ namespace Stafferable.Server.Services.Timesheet
             return response;
         }
 
+        public async Task<ServiceResponse<TimesheetCard>> GetSingleCard(Guid cardId)
+        {
+            var card = await _context.TimesheetCards.FindAsync(cardId);
+            if (card == null)
+            {
+                return new ServiceResponse<TimesheetCard>
+                {
+                    Success = false,
+                    Message = "User not found."
+                };
+            }
+
+            return new ServiceResponse<TimesheetCard> { Data = card, Message = "Card Found." };
+        }
+
         public async Task<ServiceResponse<TimesheetCard>> PostTimesheetCard(TimesheetCard model)
         {
             _context.TimesheetCards.Add(model);
             await _context.SaveChangesAsync();
 
             return new ServiceResponse<TimesheetCard> { Data = model, Message = "Timesheet Card created!" };
+        }
+
+        public async Task<ServiceResponse<List<TimesheetRecord>>> GetTimesheetRecordsByCard(Guid CardId)
+        {
+            var response = new ServiceResponse<List<TimesheetRecord>>();
+            var findCard = await _context.TimesheetCards.FirstOrDefaultAsync(x => x.TimesheetCardId == CardId);
+            var records = await _context.TimesheetRecords.Where(u => u.TimesheetCardId == CardId).ToListAsync();
+
+            if (findCard == null)
+            {
+                response.Success = false;
+                response.Message = "Timesheet Card not found.";
+            }
+            else if (records.Count < 1)
+            {
+                response.Success = false;
+                response.Message = $"No Timesheet Records for Card: {findCard.CustomName}";
+            }
+            else
+            {
+                response.Data = records;
+                response.Message = $"Timesheet Records found for Card: {findCard.CustomName}";
+            }
+
+            return response;
         }
     }
 }

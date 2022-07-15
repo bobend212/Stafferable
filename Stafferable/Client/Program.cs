@@ -3,6 +3,7 @@ global using Stafferable.Client.Services.Auth;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using MudBlazor.Services;
 using Sotsera.Blazor.Toaster.Core.Models;
 using Stafferable.Client;
 using Stafferable.Client.Services.Timesheet;
@@ -20,6 +21,7 @@ builder.Services.AddToaster(config =>
 });
 
 //services
+builder.Services.AddMudServices();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddOptions();
 builder.Services.AddAuthorizationCore();

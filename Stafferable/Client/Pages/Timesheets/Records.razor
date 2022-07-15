@@ -1,0 +1,32 @@
+﻿@page "/timesheet/{CardId:guid}/records"
+@inject ITimesheetCardServiceClient TimesheetService
+@attribute [Authorize]
+
+<h3>Records</h3>
+
+@if(records != null)
+{
+    <ol>
+    @foreach (var record in records)
+    {
+        <li>@record.Project</li>
+    }
+    </ol>
+}
+else
+{
+    <h4 class="text-danger">No records found.</h4>
+}
+
+
+@code {
+    List<TimesheetRecord> records = new List<TimesheetRecord>();
+
+    [Parameter]
+    public Guid CardId { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        records = (await TimesheetService.GetTimesheetRecordsByCard(CardId)).Data;
+    }
+}

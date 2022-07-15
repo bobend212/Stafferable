@@ -3,6 +3,7 @@
 @using Stafferable.Shared.Timesheet
 @inject ITimesheetCardServiceClient TimesheetCardService
 @inject IToaster Toaster
+@inject NavigationManager NavigationManager
 @attribute [Authorize]
 
 <div class="container">
@@ -62,7 +63,7 @@
                         <th>@timesheet.StartDate</th>
                         <th>@timesheet.TotalHours</th>
                         <th>@timesheet.Status</th>
-                        <th><button type="button" class="btn btn-light">Info</button></th>
+                        <th><MudButton Variant="Variant.Filled" OnClick="@((e) => ShowCardInfo(timesheet.TimesheetCardId))">Open</MudButton></th>
                     </tr>
                 }
             </tbody>
@@ -94,5 +95,10 @@
         var result = await TimesheetCardService.PostTimesheetCard(request);
         Toaster.Success(result.Message);
         timesheets = (await TimesheetCardService.GetTimesheetCardsByLoggedUser()).Data;
+    }
+
+    async Task ShowCardInfo(Guid cardId)
+    {
+        NavigationManager.NavigateTo($"timesheet/{cardId}/records");
     }
 }

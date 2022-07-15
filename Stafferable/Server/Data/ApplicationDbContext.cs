@@ -12,5 +12,6 @@ namespace Stafferable.Server.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<TimesheetCard> TimesheetCards { get; set; }
+        public DbSet<TimesheetRecord> TimesheetRecords { get; set; }
     }
 }

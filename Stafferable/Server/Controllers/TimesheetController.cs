@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Stafferable.Server.Services.Timesheet;
 using Stafferable.Shared;
 using Stafferable.Shared.Timesheet;
@@ -46,6 +47,14 @@ namespace Stafferable.Server.Controllers
                 return BadRequest(response);
             }
 
+            return Ok(response);
+        }
+
+        [Authorize]
+        [HttpGet("{cardId}/records")]
+        public async Task<ActionResult<ServiceResponse<List<TimesheetRecord>>>> GetTimesheetRecordsByCard(Guid cardId)
+        {
+            var response = await _timesheetService.GetTimesheetRecordsByCard(cardId);
             return Ok(response);
         }
     }
