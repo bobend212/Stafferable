@@ -12,10 +12,6 @@
         <DataAnnotationsValidator />
 
         <div class="row mb-3">
-            <div class="col-auto">
-                <label>Custom Name</label>
-                <InputText @bind-Value="request.CustomName" class="form-control" />
-            </div>
 
             <div class="col-auto">
                 <label>Date</label>
@@ -33,13 +29,6 @@
     <hr />
     @if (timesheets != null)
     {
-        @*        <ol>
-    @foreach (var timesheet in timesheets)
-    {
-    <li>@timesheet.CustomName / @timesheet.StartDate / hours: @timesheet.TotalHours</li>
-    }
-    </ol>*@
-
         <table class="table table-sm table-bordered table-striped">
             <caption>Total: @timesheets.Count</caption>
             <thead>
@@ -50,6 +39,7 @@
                     <th scope="col">Start Date</th>
                     <th scope="col">Total Hours</th>
                     <th scope="col">Status</th>
+                    <th scope="col">Records</th>
                     <th scope="col"></th>
                 </tr>
             </thead>
@@ -63,6 +53,7 @@
                         <th>@timesheet.StartDate</th>
                         <th>@timesheet.TotalHours</th>
                         <th>@timesheet.Status</th>
+                        <th>@timesheet.TimesheetRecords.Count</th>
                         <th><MudButton Variant="Variant.Filled" OnClick="@((e) => ShowCardInfo(timesheet.TimesheetCardId))">Open</MudButton></th>
                     </tr>
                 }
@@ -92,6 +83,7 @@
 
     private async Task PostTimesheetCard()
     {
+        request.CustomName = $"{request.StartDate.ToString("MMMM")}-{request.StartDate.ToString("yyyy")}";
         var result = await TimesheetCardService.PostTimesheetCard(request);
         Toaster.Success(result.Message);
         timesheets = (await TimesheetCardService.GetTimesheetCardsByLoggedUser()).Data;

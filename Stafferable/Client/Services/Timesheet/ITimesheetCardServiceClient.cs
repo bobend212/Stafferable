@@ -7,6 +7,9 @@ namespace Stafferable.Client.Services.Timesheet
     {
         //cards
         Task<ServiceResponse<List<TimesheetCard>>> GetTimesheetCardsByLoggedUser();
+
+        Task<ServiceResponse<TimesheetCard>> GetSingleCard(Guid cardId);
+
         Task<ServiceResponse<TimesheetCard>> PostTimesheetCard(TimesheetCardPost request);
 
         //records

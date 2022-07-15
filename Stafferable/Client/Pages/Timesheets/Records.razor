@@ -2,10 +2,12 @@
 @inject ITimesheetCardServiceClient TimesheetService
 @attribute [Authorize]
 
-<h3>Records</h3>
+
 
 @if (records != null)
 {
+    <h3>Timesheet: @currentCard?.CustomName</h3>
+
     <MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
           Items="@records"
           Virtualize="false"
@@ -36,7 +38,7 @@
             <MudTh Style="text-align: right" colspan="5">Total: @context.Items.Sum((e) => e.Time)</MudTh>
         </GroupFooterTemplate>
         <FooterContent>
-            <MudTh Style="text-align: right" colspan="5">Grand Total: xxx</MudTh>
+            <MudTh Style="text-align: right; font-weight: bold" colspan="5">Grand Total: @currentCard?.TotalHours</MudTh>
         </FooterContent>
     </MudTable>
 }
@@ -48,12 +50,15 @@ else
 
 @code {
     List<TimesheetRecord> records = new List<TimesheetRecord>();
+    TimesheetCard currentCard = new TimesheetCard();
 
     [Parameter]
     public Guid CardId { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
+        //var xx = (await TimesheetService.GetSingleCard(CardId)).Data;
+        currentCard = (await TimesheetService.GetSingleCard(CardId)).Data;
         records = (await TimesheetService.GetTimesheetRecordsByCard(CardId)).Data;
     }
 

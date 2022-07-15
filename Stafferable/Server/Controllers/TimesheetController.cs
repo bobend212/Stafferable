@@ -57,5 +57,18 @@ namespace Stafferable.Server.Controllers
             var response = await _timesheetService.GetTimesheetRecordsByCard(cardId);
             return Ok(response);
         }
+
+        [HttpGet("card/{cardId}")]
+        public async Task<ActionResult<ServiceResponse<TimesheetCard>>> GetSingleCard(Guid cardId)
+        {
+            var response = await _timesheetService.GetSingleCard(cardId);
+
+            if (!response.Success)
+            {
+                return BadRequest();
+            }
+
+            return Ok(response);
+        }
     }
 }

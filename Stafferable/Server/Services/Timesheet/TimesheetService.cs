@@ -18,7 +18,9 @@ namespace Stafferable.Server.Services.Timesheet
         {
             var response = new ServiceResponse<List<TimesheetCard>>();
             var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == userId);
-            var timesheets = await _context.TimesheetCards.Where(u => u.UserId == userId).ToListAsync();
+            var timesheets = await _context.TimesheetCards
+                .Include(x => x.TimesheetRecords)
+                .Where(u => u.UserId == userId).ToListAsync();
 
             if (user == null)
             {
@@ -47,7 +49,7 @@ namespace Stafferable.Server.Services.Timesheet
                 return new ServiceResponse<TimesheetCard>
                 {
                     Success = false,
-                    Message = "User not found."
+                    Message = "Card not found."
                 };
             }
 
