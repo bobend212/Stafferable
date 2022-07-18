@@ -2,6 +2,7 @@
 using Stafferable.Server.Data;
 using Stafferable.Shared;
 using Stafferable.Shared.Timesheet;
+using System.Globalization;
 
 namespace Stafferable.Server.Services.Timesheet
 {
@@ -90,6 +91,22 @@ namespace Stafferable.Server.Services.Timesheet
             }
 
             return response;
+        }
+
+        public async Task<ServiceResponse<TimesheetRecord>> PostTimesheetRecord(TimesheetRecord model)
+        {
+            model.WeekNo = GetWeekNumber(model.Date);
+            _context.TimesheetRecords.Add(model);
+            await _context.SaveChangesAsync();
+
+            return new ServiceResponse<TimesheetRecord> { Data = model, Message = "Timesheet Record created!" };
+        }
+
+        private static int GetWeekNumber(DateTime dtPassed)
+        {
+            CultureInfo ciCurr = CultureInfo.CurrentCulture;
+            int weekNum = ciCurr.Calendar.GetWeekOfYear(dtPassed, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+            return weekNum;
         }
     }
 }

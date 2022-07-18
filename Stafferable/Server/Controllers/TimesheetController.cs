@@ -70,5 +70,29 @@ namespace Stafferable.Server.Controllers
 
             return Ok(response);
         }
+
+        [HttpPost("post-timesheet-record")]
+        public async Task<ActionResult<ServiceResponse<TimesheetRecord>>> PostTimesheetRecord(TimesheetRecordPost request)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var newTimesheetRecord = new TimesheetRecord
+            {
+                TimesheetCardId = request.TimesheetCardId,
+                UserId = int.Parse(userId),
+                Date = request.Date,
+                Type = request.Type,
+                Project = request.Project,
+                Time = request.Time
+            };
+
+            var response = await _timesheetService.PostTimesheetRecord(newTimesheetRecord);
+
+            if (!response.Success)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
     }
 }
