@@ -1,46 +1,86 @@
 ﻿@page "/timesheet/{CardId:guid}/records"
 @inject ITimesheetCardServiceClient TimesheetService
+@inject NavigationManager NavigationManager
+@inject IToaster Toaster
 @attribute [Authorize]
 
+
+<EditForm Model="request" OnValidSubmit="PostTimesheetRecord">
+    <DataAnnotationsValidator />
+
+    <div class="row mb-3">
+
+        <div class="col-auto">
+            <label>Date</label>
+            <InputDate format-value="yyyy-MM-dd" @bind-Value="@request.Date" class="form-control" />
+        </div>
+
+        <div class="col-auto">
+            <label>Type</label>
+            <InputText @bind-Value="@request.Type" class="form-control" />
+        </div>
+
+        <div class="col-auto">
+            <label>Project</label>
+            <InputText @bind-Value="@request.Project" class="form-control" />
+        </div>
+
+        <div class="col-auto">
+            <label>Time</label>
+            <InputNumber @bind-Value="@request.Time" class="form-control" />
+        </div>
+
+        <div class="col-auto" style="display:flex; align-items: flex-end">
+            <button type="submit" class="btn btn-success">Add Record</button>
+        </div>
+    </div>
+
+    <ValidationSummary />
+</EditForm>
 
 
 @if (records != null)
 {
-    <h3>Timesheet: @currentCard?.CustomName</h3>
+    <div style="display: flex; justify-content: space-between">
+        <h3>Timesheet: @currentCard?.CustomName</h3>
+        <h3><button type="button" class="btn btn-outline-warning" @onclick="ReturnToTimesheets">Return</button></h3>
+    </div>
 
-    <MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
-          Items="@records"
-          Virtualize="false"
-          GroupBy="@_groupDefinition"
-          GroupHeaderStyle="background-color:var(--mud-palette-background-grey)"
-          GroupFooterClass="mb-4"
-          Dense="true"
-          MultiSelection="false"
-          Bordered="true">
-        <HeaderContent>
-            <MudTh></MudTh>
-            <MudTh Style="font-weight: bold">Date</MudTh>
-            <MudTh Style="font-weight: bold">Type</MudTh>
-            <MudTh Style="font-weight: bold">Project</MudTh>
-            <MudTh Style="text-align: right;font-weight: bold">Time</MudTh>
-        </HeaderContent>
-        <GroupHeaderTemplate>
-            <MudTh Class="mud-table-cell-custom-group" colspan="5">@($"Week: {context.Key}")</MudTh>
-        </GroupHeaderTemplate>
-        <RowTemplate>
-            <MudTd DataLabel=""></MudTd>
-            <MudTd DataLabel="Date">@context.Date.ToString("dd/MMM/yyyy")</MudTd>
-            <MudTd DataLabel="Type">@context.Type</MudTd>
-            <MudTd DataLabel="Project">@context.Project</MudTd>
-            <MudTd Style="text-align: right" DataLabel="Time">@context.Time</MudTd>
-        </RowTemplate>
-        <GroupFooterTemplate>
-            <MudTh Style="text-align: right" colspan="5">Total: @context.Items.Sum((e) => e.Time)</MudTh>
-        </GroupFooterTemplate>
-        <FooterContent>
-            <MudTh Style="text-align: right; font-weight: bold" colspan="5">Grand Total: @currentCard?.TotalHours</MudTh>
-        </FooterContent>
-    </MudTable>
+    <MudPaper Elevation="4">
+        <MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
+              Items="@records"
+              Virtualize="false"
+              GroupBy="@_groupDefinition"
+              GroupHeaderStyle="background-color:var(--mud-palette-background-grey)"
+              GroupFooterClass="mb-4"
+              Dense="true"
+              MultiSelection="false"
+              Bordered="true">
+            <HeaderContent>
+                <MudTh></MudTh>
+                <MudTh Style="font-weight: bold">Date</MudTh>
+                <MudTh Style="font-weight: bold">Type</MudTh>
+                <MudTh Style="font-weight: bold">Project</MudTh>
+                <MudTh Style="text-align: right;font-weight: bold">Time</MudTh>
+            </HeaderContent>
+            <GroupHeaderTemplate>
+                <MudTh Class="mud-table-cell-custom-group" colspan="5">@($"Week: {context.Key}")</MudTh>
+            </GroupHeaderTemplate>
+            <RowTemplate>
+                <MudTd DataLabel=""></MudTd>
+                <MudTd DataLabel="Date">@context.Date.ToString("dd/MMM/yyyy")</MudTd>
+                <MudTd DataLabel="Type">@context.Type</MudTd>
+                <MudTd DataLabel="Project">@context.Project</MudTd>
+                <MudTd Style="text-align: right" DataLabel="Time">@context.Time</MudTd>
+            </RowTemplate>
+            <GroupFooterTemplate>
+                <MudTh Style="text-align: right" colspan="5">Total: @context.Items.Sum((e) => e.Time)</MudTh>
+            </GroupFooterTemplate>
+            <FooterContent>
+                <MudTh Style="text-align: right; font-weight: bold" colspan="5">Grand Total: @currentCard?.TotalHours</MudTh>
+            </FooterContent>
+        </MudTable>
+    </MudPaper>
 }
 else
 {
@@ -51,13 +91,13 @@ else
 @code {
     List<TimesheetRecord> records = new List<TimesheetRecord>();
     TimesheetCard currentCard = new TimesheetCard();
+    TimesheetRecordPost request = new TimesheetRecordPost();
 
     [Parameter]
     public Guid CardId { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
-        //var xx = (await TimesheetService.GetSingleCard(CardId)).Data;
         currentCard = (await TimesheetService.GetSingleCard(CardId)).Data;
         records = (await TimesheetService.GetTimesheetRecordsByCard(CardId)).Data;
     }
@@ -68,4 +108,17 @@ else
             Expandable = false,
             Selector = (e) => e.WeekNo
         };
+
+    private async Task ReturnToTimesheets()
+    {
+        NavigationManager.NavigateTo("timesheet");
+    }
+
+    private async Task PostTimesheetRecord()
+    {
+        request.TimesheetCardId = currentCard.TimesheetCardId;
+        var result = await TimesheetService.PostTimesheetRecord(request);
+        Toaster.Success(result.Message);
+        records = (await TimesheetService.GetTimesheetRecordsByCard(CardId)).Data;
+    }
 }

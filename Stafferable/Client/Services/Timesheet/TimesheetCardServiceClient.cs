@@ -35,5 +35,11 @@ namespace Stafferable.Client.Services.Timesheet
             var result = await _http.GetFromJsonAsync<ServiceResponse<List<TimesheetRecord>>>($"/api/Timesheet/{cardId}/records");
             return result;
         }
+
+        public async Task<ServiceResponse<TimesheetRecord>> PostTimesheetRecord(TimesheetRecordPost request)
+        {
+            var result = await _http.PostAsJsonAsync("api/Timesheet/post-timesheet-record", request);
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<TimesheetRecord>>();
+        }
     }
 }

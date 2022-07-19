@@ -8,7 +8,7 @@
 
         public int WeekNo { get; set; }
 
-        public DateTime Date { get; set; }
+        public DateTime Date { get; set; } = DateTime.Now;
 
         public string Type { get; set; } = string.Empty;
 
