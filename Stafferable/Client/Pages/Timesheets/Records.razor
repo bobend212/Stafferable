@@ -42,7 +42,7 @@
 @if (records != null)
 {
     <div style="display: flex; justify-content: space-between">
-        <h3>Timesheet: @currentCard?.CustomName</h3>
+        <h3>Timesheet: @currentCard.StartDate?.ToString("dd/MMM/yyyy") - @currentCard.EndDate?.ToString("dd/MMM/yyyy")</h3>
         <h3><button type="button" class="btn btn-outline-warning" @onclick="ReturnToTimesheets">Return</button></h3>
     </div>
 

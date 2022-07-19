@@ -35,6 +35,7 @@ namespace Stafferable.Server.Controllers
                 CustomName = request.CustomName,
                 DateCreated = DateTime.Now,
                 StartDate = request.StartDate,
+                EndDate = request.EndDate,
                 Status = request.Status,
                 TotalHours = request.TotalHours,
                 UserId = int.Parse(userId)

@@ -8,74 +8,82 @@
 
 <div class="container">
     <h3>Timesheets</h3>
-    <EditForm Model="request" OnValidSubmit="PostTimesheetCard">
-        <DataAnnotationsValidator />
-
+    <MudForm>
         <div class="row mb-3">
 
             <div class="col-auto">
-                <label>Date</label>
-                <InputDate format-value="yyyy-MM-dd" @bind-Value="@request.StartDate" class="form-control" />
-
+                <MudTextField @bind-Value="request.CustomName" Label="Name" Variant="Variant.Text"></MudTextField>
+            </div>
+            <div class="col-auto">
+                <MudDateRangePicker @ref="_picker" Label="Date Range" @bind-DateRange="_dateRange" ShowWeekNumbers="true" DisableToolbar="true">
+                    <PickerActions>
+                        <MudButton Class=" mr-auto align-self-start" OnClick="@(() => _picker.Clear())">
+                            Clear
+                        </MudButton>
+                        <MudButton OnClick="@(() => _picker.Close(false))">Cancel</MudButton>
+                        <MudButton Color="Color.Primary" OnClick="@(() => _picker.Close())">Ok</MudButton>
+                    </PickerActions>
+                </MudDateRangePicker>
             </div>
 
             <div class="col-auto" style="display:flex; align-items: flex-end">
-                <button type="submit" class="btn btn-success">New Timesheet</button>
+                <MudButton StartIcon="@Icons.Material.Filled.AddBox" IconColor="Color.Dark" OnClick="PostTimesheetCard" Variant="Variant.Filled" Color="Color.Tertiary">New Timesheet</MudButton>
             </div>
         </div>
+    </MudForm>
 
-        <ValidationSummary />
-    </EditForm>
     <hr />
     @if (timesheets != null)
     {
-        <table class="table table-sm table-bordered table-striped">
-            <caption>Total: @timesheets.Count</caption>
-            <thead>
-                <tr>
-                    <th scope="col">ID</th>
-                    <th scope="col">Custom Name</th>
-                    <th scope="col">Date Created</th>
-                    <th scope="col">Start Date</th>
-                    <th scope="col">Total Hours</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Records</th>
-                    <th scope="col"></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var timesheet in timesheets)
-                {
-                    <tr>
-                        <th>@timesheet.TimesheetCardId</th>
-                        <th>@timesheet.CustomName</th>
-                        <th>@timesheet.DateCreated</th>
-                        <th>@timesheet.StartDate</th>
-                        <th>@timesheet.TotalHours</th>
-                        <th>@timesheet.Status</th>
-                        <th>@timesheet.TimesheetRecords.Count</th>
-                        <th><MudButton Variant="Variant.Filled" OnClick="@((e) => ShowCardInfo(timesheet.TimesheetCardId))">Open</MudButton></th>
-                    </tr>
-                }
-            </tbody>
-        </table>
+        <MudPaper Elevation="4">
+            <MudTable Items="@timesheets" Dense="true">
+                <HeaderContent>
+                    <MudTh>Name</MudTh>
+                    <MudTh>Date Range</MudTh>
+                    <MudTh>Date Created</MudTh>
+                    <MudTh>Status</MudTh>
+                    <MudTh>Hours</MudTh>
+                    <MudTh>Records</MudTh>
+                    <MudTh></MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.CustomName</MudTd>
+                    <MudTd>@context.StartDate?.ToString("dd/MMM/yyyy") - @context.EndDate?.ToString("dd/MMM/yyyy")</MudTd>
+                    <MudTd>@context.DateCreated</MudTd>
+                    <MudTd>@context.Status</MudTd>
+                    <MudTd>@context.TotalHours</MudTd>
+                    <MudTd>@context.TimesheetRecords.Count</MudTd>
+                    <MudTd>
+                        <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" Color="Color.Success" Size="Size.Medium" OnClick="@((e) => ShowCardInfo(context.TimesheetCardId))"></MudIconButton>
+                        <MudIconButton Icon="@Icons.Material.Filled.ModeEdit" Color="Color.Warning" Size="Size.Medium"></MudIconButton>
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Medium"></MudIconButton>
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="new int[]{50, 100}" />
+                </PagerContent>
+            </MudTable>
+        </MudPaper>
     }
     else
     {
-        <h2>@xx.Message</h2>
+        <h2>@findCards.Message</h2>
     }
 
 </div>
 
 @code {
+    MudDateRangePicker _picker;
+    DateRange _dateRange = new DateRange();
+
     List<TimesheetCard> timesheets = new List<TimesheetCard>();
-    ServiceResponse<List<TimesheetCard>> xx;
+    ServiceResponse<List<TimesheetCard>> findCards;
     TimesheetCardPost request = new TimesheetCardPost();
 
     protected override async Task OnInitializedAsync()
     {
-        xx = await TimesheetCardService.GetTimesheetCardsByLoggedUser();
-        if (xx != null)
+        findCards = await TimesheetCardService.GetTimesheetCardsByLoggedUser();
+        if (findCards != null)
         {
             timesheets = (await TimesheetCardService.GetTimesheetCardsByLoggedUser()).Data;
         }
@@ -83,7 +91,9 @@
 
     private async Task PostTimesheetCard()
     {
-        request.CustomName = $"{request.StartDate.ToString("MMMM")}-{request.StartDate.ToString("yyyy")}";
+        request.Status = "not approved";
+        request.StartDate = _dateRange.Start;
+        request.EndDate = _dateRange.End;
         var result = await TimesheetCardService.PostTimesheetCard(request);
         Toaster.Success(result.Message);
         timesheets = (await TimesheetCardService.GetTimesheetCardsByLoggedUser()).Data;

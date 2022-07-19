@@ -21,7 +21,9 @@ namespace Stafferable.Server.Services.Timesheet
             var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == userId);
             var timesheets = await _context.TimesheetCards
                 .Include(x => x.TimesheetRecords)
-                .Where(u => u.UserId == userId).ToListAsync();
+                .Where(u => u.UserId == userId)
+                .OrderByDescending(x => x.StartDate)
+                .ToListAsync();
 
             if (user == null)
             {
