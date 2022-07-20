@@ -67,6 +67,25 @@ namespace Stafferable.Server.Services.Timesheet
             return new ServiceResponse<TimesheetCard> { Data = model, Message = "Timesheet Card created!" };
         }
 
+        public async Task<ServiceResponse<bool>> DeleteTimesheetCard(Guid cardId)
+        {
+            var findCard = await _context.TimesheetCards.FindAsync(cardId);
+            if (findCard == null)
+            {
+                return new ServiceResponse<bool>()
+                {
+                    Success = false,
+                    Data = false,
+                    Message = "Card not found."
+                };
+            }
+
+            _context.TimesheetCards.Remove(findCard);
+            await _context.SaveChangesAsync();
+
+            return new ServiceResponse<bool> { Message = "Card Deleted", Data = true };
+        }
+
         public async Task<ServiceResponse<List<TimesheetRecord>>> GetTimesheetRecordsByCard(Guid CardId)
         {
             var response = new ServiceResponse<List<TimesheetRecord>>();
@@ -98,9 +117,13 @@ namespace Stafferable.Server.Services.Timesheet
         public async Task<ServiceResponse<TimesheetRecord>> PostTimesheetRecord(TimesheetRecord model)
         {
             model.WeekNo = GetWeekNumber(model.Date);
+            
+            
+            TimesheetCard findCard = await _context.TimesheetCards.FirstOrDefaultAsync(x => x.TimesheetCardId == model.TimesheetCardId);
+            findCard.TotalHours += model.Time;
+
             _context.TimesheetRecords.Add(model);
             await _context.SaveChangesAsync();
-
             return new ServiceResponse<TimesheetRecord> { Data = model, Message = "Timesheet Record created!" };
         }
 

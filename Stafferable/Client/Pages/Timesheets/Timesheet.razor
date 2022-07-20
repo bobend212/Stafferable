@@ -1,9 +1,8 @@
 ﻿@page "/timesheet"
-@using Stafferable.Shared
-@using Stafferable.Shared.Timesheet
 @inject ITimesheetCardServiceClient TimesheetCardService
 @inject IToaster Toaster
 @inject NavigationManager NavigationManager
+@inject IDialogService DialogService
 @attribute [Authorize]
 
 <div class="container">
@@ -15,7 +14,7 @@
                 <MudTextField @bind-Value="request.CustomName" Label="Name" Variant="Variant.Text"></MudTextField>
             </div>
             <div class="col-auto">
-                <MudDateRangePicker @ref="_picker" Label="Date Range" @bind-DateRange="_dateRange" ShowWeekNumbers="true" DisableToolbar="true">
+                <MudDateRangePicker Culture="@CultureInfo.GetCultureInfo("pl-pl")" @ref="_picker" Label="Date Range" @bind-DateRange="_dateRange" ShowWeekNumbers="true" DisableToolbar="true">
                     <PickerActions>
                         <MudButton Class=" mr-auto align-self-start" OnClick="@(() => _picker.Clear())">
                             Clear
@@ -56,7 +55,7 @@
                     <MudTd>
                         <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" Color="Color.Success" Size="Size.Medium" OnClick="@((e) => ShowCardInfo(context.TimesheetCardId))"></MudIconButton>
                         <MudIconButton Icon="@Icons.Material.Filled.ModeEdit" Color="Color.Warning" Size="Size.Medium"></MudIconButton>
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Medium"></MudIconButton>
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Medium" OnClick="@((e) => OpenDeleteDialog(@context))"></MudIconButton>
                     </MudTd>
                 </RowTemplate>
                 <PagerContent>
@@ -67,7 +66,7 @@
     }
     else
     {
-        <h2>@findCards.Message</h2>
+        <h2>@result.Message</h2>
     }
 
 </div>
@@ -75,15 +74,14 @@
 @code {
     MudDateRangePicker _picker;
     DateRange _dateRange = new DateRange();
-
     List<TimesheetCard> timesheets = new List<TimesheetCard>();
-    ServiceResponse<List<TimesheetCard>> findCards;
+    ServiceResponse<List<TimesheetCard>> result;
     TimesheetCardPost request = new TimesheetCardPost();
 
     protected override async Task OnInitializedAsync()
     {
-        findCards = await TimesheetCardService.GetTimesheetCardsByLoggedUser();
-        if (findCards != null)
+        result = await TimesheetCardService.GetTimesheetCardsByLoggedUser();
+        if (result != null)
         {
             timesheets = (await TimesheetCardService.GetTimesheetCardsByLoggedUser()).Data;
         }
@@ -102,5 +100,20 @@
     async Task ShowCardInfo(Guid cardId)
     {
         NavigationManager.NavigateTo($"timesheet/{cardId}/records");
+    }
+
+    async Task OpenDeleteDialog(TimesheetCard timesheetCard)
+    {
+        var parameters = new DialogParameters { ["timesheetCard"] = timesheetCard };
+        var options = new DialogOptions { FullWidth = true };
+
+        var dialog = DialogService.Show<TimesheetCardDeleteDialog>("Delete Timesheet Card", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            timesheets = (await TimesheetCardService.GetTimesheetCardsByLoggedUser()).Data;
+            Toaster.Success("Timesheet Removed");
+        }
     }
 }

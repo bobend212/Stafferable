@@ -12,6 +12,8 @@ namespace Stafferable.Client.Services.Timesheet
 
         Task<ServiceResponse<TimesheetCard>> PostTimesheetCard(TimesheetCardPost request);
 
+        Task DeleteTimesheetCard(Guid cardId);
+
         //records
         Task<ServiceResponse<List<TimesheetRecord>>> GetTimesheetRecordsByCard(Guid cardId);
 

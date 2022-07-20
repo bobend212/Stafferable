@@ -72,6 +72,13 @@ namespace Stafferable.Server.Controllers
             return Ok(response);
         }
 
+        [HttpDelete("card/{cardId}")]
+        public async Task<ActionResult<ServiceResponse<bool>>> DeleteTimesheetCard(Guid cardId)
+        {
+            var response = await _timesheetService.DeleteTimesheetCard(cardId);
+            return Ok(response);
+        }
+
         [HttpPost("post-timesheet-record")]
         public async Task<ActionResult<ServiceResponse<TimesheetRecord>>> PostTimesheetRecord(TimesheetRecordPost request)
         {

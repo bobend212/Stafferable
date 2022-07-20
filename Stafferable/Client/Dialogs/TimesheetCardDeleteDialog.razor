@@ -1,0 +1,25 @@
+﻿@inject ITimesheetCardServiceClient TimesheetService
+
+<MudDialog>
+    <DialogContent>
+        <MudText>Do you really want to delete this Card?</MudText>
+        <MudText>This process cannot be undone.</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="Delete">Delete</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public TimesheetCard timesheetCard { get; set; } = new TimesheetCard();
+
+    
+    void Cancel() => MudDialog.Cancel();
+
+    async Task Delete()
+    {
+         await TimesheetService.DeleteTimesheetCard(timesheetCard.TimesheetCardId);
+         MudDialog.Close(DialogResult.Ok(timesheetCard));
+    }
+}
