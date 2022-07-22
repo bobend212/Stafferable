@@ -4,44 +4,10 @@
 @inject IToaster Toaster
 @attribute [Authorize]
 
-
-@*<EditForm Model="request" OnValidSubmit="PostTimesheetRecord">
-    <DataAnnotationsValidator />
-
-    <div class="row mb-3">
-
-    <div class="col-auto">
-    <label>Date</label>
-    <InputDate format-value="yyyy-MM-dd" @bind-Value="@request.Date" class="form-control" />
-    </div>
-
-    <div class="col-auto">
-    <label>Type</label>
-    <InputText @bind-Value="@request.Type" class="form-control" />
-    </div>
-
-    <div class="col-auto">
-    <label>Project</label>
-    <InputText @bind-Value="@request.Project" class="form-control" />
-    </div>
-
-    <div class="col-auto">
-    <label>Time</label>
-    <InputNumber @bind-Value="@request.Time" class="form-control" />
-    </div>
-
-    <div class="col-auto" style="display:flex; align-items: flex-end">
-    <button type="submit" class="btn btn-success">Add Record</button>
-    </div>
-    </div>
-
-    <ValidationSummary />
-    </EditForm>*@
-
 <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
     <div class="row mb-3">
         <div class="col-auto">
-            <MudDatePicker Culture="@CultureInfo.GetCultureInfo("pl-pl")" Label="Date" @bind-Date="request.Date" ShowWeekNumbers="true" Required="true" RequiredError="Date is required!" MinDate="@currentCard.StartDate" MaxDate="@currentCard.EndDate" />
+            <MudDatePicker Culture="@CultureInfo.GetCultureInfo("pl-pl")" Label="Date" @bind-Date="request.Date" ShowWeekNumbers="true" Required="true" RequiredError="Date is required!" MinDate="@currentCard.StartDate" MaxDate="@currentCard.EndDate" StartMonth="@currentCard.StartDate" DisplayMonths="2" DisableToolbar="true" />
         </div>
 
         <div class="col-auto">
@@ -61,65 +27,72 @@
         </div>
     </div>
 </MudForm>
-
+<div style="display: flex; justify-content: space-between">
+    <h3>Timesheet: @currentCard.StartDate?.ToString("dd/MMM/yyyy") - @currentCard.EndDate?.ToString("dd/MMM/yyyy")</h3>
+    <h3><button type="button" class="btn btn-outline-warning" @onclick="ReturnToTimesheets">Return</button></h3>
+</div>
 
 @if (records != null)
 {
-    <div style="display: flex; justify-content: space-between">
-        <h3>Timesheet: @currentCard.StartDate?.ToString("dd/MMM/yyyy") - @currentCard.EndDate?.ToString("dd/MMM/yyyy")</h3>
-        <h3><button type="button" class="btn btn-outline-warning" @onclick="ReturnToTimesheets">Return</button></h3>
-    </div>
+    <MudTabs Elevation="4" ApplyEffectsToContainer="true" PanelClass="pa-6" Rounded="true" Centered="true" Color="@Color.Primary">
+        @foreach (var item in weekCollection.OrderBy(x => x).Distinct())
+        {
+            <MudTabPanel Text="@item.ToString()">
 
-    <MudPaper Elevation="4">
-        <MudTable Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
-              Items="@records"
-              Virtualize="false"
-              GroupBy="@_groupDefinition"
-              GroupHeaderStyle="background-color:var(--mud-palette-background-grey)"
-              GroupFooterClass="mb-4"
-              Dense="true"
-              MultiSelection="false"
-              Bordered="true">
-            <HeaderContent>
-                <MudTh></MudTh>
-                <MudTh Style="font-weight: bold">Date</MudTh>
-                <MudTh Style="font-weight: bold">Type</MudTh>
-                <MudTh Style="font-weight: bold">Project</MudTh>
-                <MudTh Style="text-align: right;font-weight: bold">Time</MudTh>
-            </HeaderContent>
-            <GroupHeaderTemplate>
-                <MudTh Class="mud-table-cell-custom-group" colspan="5">@($"Week: {context.Key}")</MudTh>
-            </GroupHeaderTemplate>
-            <RowTemplate>
-                <MudTd DataLabel=""></MudTd>
-                <MudTd DataLabel="Date">@context.Date?.ToString("dd/MMM/yyyy")</MudTd>
-                <MudTd DataLabel="Type">@context.Type</MudTd>
-                <MudTd DataLabel="Project">@context.Project</MudTd>
-                <MudTd Style="text-align: right" DataLabel="Time">@context.Time</MudTd>
-            </RowTemplate>
-            <GroupFooterTemplate>
-                <MudTh Style="text-align: right" colspan="5">Total: @context.Items.Sum((e) => e.Time)</MudTh>
-            </GroupFooterTemplate>
-            <FooterContent>
-                <MudTh Style="text-align: right; font-weight: bold" colspan="5">Grand Total: @currentCard?.TotalHours</MudTh>
-            </FooterContent>
-        </MudTable>
-    </MudPaper>
+                <MudTable Elevation="4" Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
+                  Items="@records.Where(x => x.WeekNo == item)"
+                  Virtualize="false"
+                  GroupBy="@_groupDefinition"
+                  GroupHeaderStyle="background-color:var(--mud-palette-background-grey)"
+                  GroupFooterClass="mb-4"
+                  Dense="true"
+                  MultiSelection="false"
+                  Bordered="true">
+                    <HeaderContent>
+                        <MudTh></MudTh>
+                        <MudTh Style="font-weight: bold">Date</MudTh>
+                        <MudTh Style="font-weight: bold">Type</MudTh>
+                        <MudTh Style="font-weight: bold">Project</MudTh>
+                        <MudTh Style="text-align: right;font-weight: bold">Time</MudTh>
+                    </HeaderContent>
+                    <GroupHeaderTemplate>
+                        <MudTh Class="mud-table-cell-custom-group" colspan="5">@($"Week: {context.Key}")</MudTh>
+                    </GroupHeaderTemplate>
+                    <RowTemplate>
+                        <MudTd DataLabel=""></MudTd>
+                        <MudTd DataLabel="Date">@context.Date?.ToString("dd/MMM/yyyy")</MudTd>
+                        <MudTd DataLabel="Type">@context.Type</MudTd>
+                        <MudTd DataLabel="Project">@context.Project</MudTd>
+                        <MudTd Style="text-align: right" DataLabel="Time">@context.Time</MudTd>
+                    </RowTemplate>
+                    <GroupFooterTemplate>
+                        <MudTh Style="text-align: right" colspan="5">Weekly: @context.Items.Sum((e) => e.Time)</MudTh>
+                    </GroupFooterTemplate>
+                    <FooterContent>
+                        <MudTh Style="text-align: right; font-weight: bold" colspan="5">Monthly Total: @currentCard?.TotalHours</MudTh>
+                    </FooterContent>
+                </MudTable>
+
+            </MudTabPanel>
+        }
+    </MudTabs>
+
+
+
 }
 else
 {
     <h4 class="text-danger">No records found.</h4>
 }
 
-
 @code {
-    List<TimesheetRecord> records = new List<TimesheetRecord>();
-    TimesheetCard currentCard = new TimesheetCard();
-    TimesheetRecordPost request = new TimesheetRecordPost();
-
     [Parameter]
     public Guid CardId { get; set; }
 
+    List<TimesheetRecord> records = new List<TimesheetRecord>();
+    TimesheetCard currentCard = new TimesheetCard();
+    TimesheetRecordPost request = new TimesheetRecordPost();
+    List<int> weekCollection = new List<int>();
     bool success;
     string[] errors = { };
     MudForm form;
@@ -128,13 +101,28 @@ else
     {
         currentCard = (await TimesheetService.GetSingleCard(CardId)).Data;
         records = (await TimesheetService.GetTimesheetRecordsByCard(CardId)).Data;
+        if (records != null)
+        {
+            weekCollection = WeekGrouping(records);
+        }
+    }
+
+    private List<int> WeekGrouping(List<TimesheetRecord> rec)
+    {
+        var tempList = rec.OrderBy(x => x.WeekNo).Select(x => x.WeekNo).Distinct();
+        foreach (var item in tempList)
+        {
+            weekCollection.Add(item);
+        }
+
+        return weekCollection;
     }
 
     private TableGroupDefinition<TimesheetRecord> _groupDefinition = new()
         {
             Indentation = false,
             Expandable = false,
-            Selector = (e) => e.WeekNo
+            Selector = (e) => e.Date
         };
 
     private async Task ReturnToTimesheets()
@@ -150,5 +138,6 @@ else
         records = (await TimesheetService.GetTimesheetRecordsByCard(CardId)).Data;
         currentCard = (await TimesheetService.GetSingleCard(CardId)).Data;
         await form.Validate();
+        weekCollection = WeekGrouping(records);
     }
 }
