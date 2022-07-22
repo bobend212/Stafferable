@@ -5,38 +5,62 @@
 @attribute [Authorize]
 
 
-<EditForm Model="request" OnValidSubmit="PostTimesheetRecord">
+@*<EditForm Model="request" OnValidSubmit="PostTimesheetRecord">
     <DataAnnotationsValidator />
 
     <div class="row mb-3">
 
-        <div class="col-auto">
-            <label>Date</label>
-            <InputDate format-value="yyyy-MM-dd" @bind-Value="@request.Date" class="form-control" />
-        </div>
+    <div class="col-auto">
+    <label>Date</label>
+    <InputDate format-value="yyyy-MM-dd" @bind-Value="@request.Date" class="form-control" />
+    </div>
 
-        <div class="col-auto">
-            <label>Type</label>
-            <InputText @bind-Value="@request.Type" class="form-control" />
-        </div>
+    <div class="col-auto">
+    <label>Type</label>
+    <InputText @bind-Value="@request.Type" class="form-control" />
+    </div>
 
-        <div class="col-auto">
-            <label>Project</label>
-            <InputText @bind-Value="@request.Project" class="form-control" />
-        </div>
+    <div class="col-auto">
+    <label>Project</label>
+    <InputText @bind-Value="@request.Project" class="form-control" />
+    </div>
 
-        <div class="col-auto">
-            <label>Time</label>
-            <InputNumber @bind-Value="@request.Time" class="form-control" />
-        </div>
+    <div class="col-auto">
+    <label>Time</label>
+    <InputNumber @bind-Value="@request.Time" class="form-control" />
+    </div>
 
-        <div class="col-auto" style="display:flex; align-items: flex-end">
-            <button type="submit" class="btn btn-success">Add Record</button>
-        </div>
+    <div class="col-auto" style="display:flex; align-items: flex-end">
+    <button type="submit" class="btn btn-success">Add Record</button>
+    </div>
     </div>
 
     <ValidationSummary />
-</EditForm>
+    </EditForm>*@
+
+<MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+    <div class="row mb-3">
+        <div class="col-auto">
+            <MudDatePicker Culture="@CultureInfo.GetCultureInfo("pl-pl")" Label="Date" @bind-Date="request.Date" ShowWeekNumbers="true" Required="true" RequiredError="Date is required!" MinDate="@currentCard.StartDate" MaxDate="@currentCard.EndDate" />
+        </div>
+
+        <div class="col-auto">
+            <MudTextField @bind-Value="request.Type" Label="Type" Variant="Variant.Text"></MudTextField>
+        </div>
+
+        <div class="col-auto">
+            <MudTextField @bind-Value="request.Project" Label="Project" Variant="Variant.Text"></MudTextField>
+        </div>
+
+        <div class="col-auto">
+            <MudNumericField @bind-Value="request.Time" Label="Time [h]" Variant="Variant.Text" Min="0" Max="10" />
+        </div>
+
+        <div class="col-auto" style="display:flex; align-items: flex-end">
+            <MudButton StartIcon="@Icons.Material.Filled.AddBox" IconColor="Color.Dark" OnClick="PostTimesheetRecord" Variant="Variant.Filled" Color="Color.Tertiary">Add</MudButton>
+        </div>
+    </div>
+</MudForm>
 
 
 @if (records != null)
@@ -68,7 +92,7 @@
             </GroupHeaderTemplate>
             <RowTemplate>
                 <MudTd DataLabel=""></MudTd>
-                <MudTd DataLabel="Date">@context.Date.ToString("dd/MMM/yyyy")</MudTd>
+                <MudTd DataLabel="Date">@context.Date?.ToString("dd/MMM/yyyy")</MudTd>
                 <MudTd DataLabel="Type">@context.Type</MudTd>
                 <MudTd DataLabel="Project">@context.Project</MudTd>
                 <MudTd Style="text-align: right" DataLabel="Time">@context.Time</MudTd>
@@ -96,6 +120,10 @@ else
     [Parameter]
     public Guid CardId { get; set; }
 
+    bool success;
+    string[] errors = { };
+    MudForm form;
+
     protected override async Task OnParametersSetAsync()
     {
         currentCard = (await TimesheetService.GetSingleCard(CardId)).Data;
@@ -120,5 +148,7 @@ else
         var result = await TimesheetService.PostTimesheetRecord(request);
         Toaster.Success(result.Message);
         records = (await TimesheetService.GetTimesheetRecordsByCard(CardId)).Data;
+        currentCard = (await TimesheetService.GetSingleCard(CardId)).Data;
+        await form.Validate();
     }
 }

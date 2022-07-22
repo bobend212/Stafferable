@@ -61,10 +61,26 @@ namespace Stafferable.Server.Services.Timesheet
 
         public async Task<ServiceResponse<TimesheetCard>> PostTimesheetCard(TimesheetCard model)
         {
+            if (await TimesheetExist(model.UserId, model.StartDate, model.EndDate))
+            {
+                return new ServiceResponse<TimesheetCard>
+                {
+                    Success = false,
+                    Message = "Timesheet already exist."
+                };
+            }
+
             _context.TimesheetCards.Add(model);
             await _context.SaveChangesAsync();
 
             return new ServiceResponse<TimesheetCard> { Data = model, Message = "Timesheet Card created!" };
+        }
+
+        private async Task<bool> TimesheetExist(int userId, DateTime? startDate, DateTime? endDate)
+        {
+            if (await _context.TimesheetCards.Where(user => user.UserId == userId).Where(s => s.StartDate == startDate).Where(e => e.EndDate == endDate).AnyAsync())
+                return true;
+            return false;
         }
 
         public async Task<ServiceResponse<bool>> DeleteTimesheetCard(Guid cardId)
@@ -118,7 +134,6 @@ namespace Stafferable.Server.Services.Timesheet
         {
             model.WeekNo = GetWeekNumber(model.Date);
             
-            
             TimesheetCard findCard = await _context.TimesheetCards.FirstOrDefaultAsync(x => x.TimesheetCardId == model.TimesheetCardId);
             findCard.TotalHours += model.Time;
 
@@ -127,10 +142,10 @@ namespace Stafferable.Server.Services.Timesheet
             return new ServiceResponse<TimesheetRecord> { Data = model, Message = "Timesheet Record created!" };
         }
 
-        private static int GetWeekNumber(DateTime dtPassed)
+        private static int GetWeekNumber(DateTime? dtPassed)
         {
             CultureInfo ciCurr = CultureInfo.CurrentCulture;
-            int weekNum = ciCurr.Calendar.GetWeekOfYear(dtPassed, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+            int weekNum = ciCurr.Calendar.GetWeekOfYear((DateTime)dtPassed, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
             return weekNum;
         }
     }

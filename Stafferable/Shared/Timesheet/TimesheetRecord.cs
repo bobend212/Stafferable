@@ -21,7 +21,7 @@ namespace Stafferable.Shared.Timesheet
         public int WeekNo { get; set; }
 
         [Required]
-        public DateTime Date { get; set; }
+        public DateTime? Date { get; set; }
 
         [Required]
         public string Type { get; set; } = string.Empty;

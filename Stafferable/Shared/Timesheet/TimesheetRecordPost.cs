@@ -1,4 +1,6 @@
-﻿namespace Stafferable.Shared.Timesheet
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Stafferable.Shared.Timesheet
 {
     public class TimesheetRecordPost
     {
@@ -8,7 +10,8 @@
 
         public int WeekNo { get; set; }
 
-        public DateTime Date { get; set; } = DateTime.Now;
+        [Required]
+        public DateTime? Date { get; set; }
 
         public string Type { get; set; } = string.Empty;
 

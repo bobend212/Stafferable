@@ -7,14 +7,10 @@
 
 <div class="container">
     <h3>Timesheets</h3>
-    <MudForm>
+    <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
         <div class="row mb-3">
-
             <div class="col-auto">
-                <MudTextField @bind-Value="request.CustomName" Label="Name" Variant="Variant.Text"></MudTextField>
-            </div>
-            <div class="col-auto">
-                <MudDateRangePicker Culture="@CultureInfo.GetCultureInfo("pl-pl")" @ref="_picker" Label="Date Range" @bind-DateRange="_dateRange" ShowWeekNumbers="true" DisableToolbar="true">
+                <MudDateRangePicker Culture="@CultureInfo.GetCultureInfo("pl-pl")" @ref="_picker" Label="Date Range" @bind-DateRange="_dateRange" ShowWeekNumbers="true" DisableToolbar="true" Required="true" RequiredError="Date range is required!">
                     <PickerActions>
                         <MudButton Class=" mr-auto align-self-start" OnClick="@(() => _picker.Clear())">
                             Clear
@@ -37,7 +33,6 @@
         <MudPaper Elevation="4">
             <MudTable Items="@timesheets" Dense="true">
                 <HeaderContent>
-                    <MudTh>Name</MudTh>
                     <MudTh>Date Range</MudTh>
                     <MudTh>Date Created</MudTh>
                     <MudTh>Status</MudTh>
@@ -46,16 +41,15 @@
                     <MudTh></MudTh>
                 </HeaderContent>
                 <RowTemplate>
-                    <MudTd>@context.CustomName</MudTd>
-                    <MudTd>@context.StartDate?.ToString("dd/MMM/yyyy") - @context.EndDate?.ToString("dd/MMM/yyyy")</MudTd>
-                    <MudTd>@context.DateCreated</MudTd>
+                    <MudTd>@context.StartDate?.ToString("dd-MMMM yyy") - @context.EndDate?.ToString("dd-MMMM yyy")</MudTd>
+                    <MudTd>@context.DateCreated.ToString("dd-MMMM yyy hh:mm")</MudTd>
                     <MudTd>@context.Status</MudTd>
                     <MudTd>@context.TotalHours</MudTd>
                     <MudTd>@context.TimesheetRecords.Count</MudTd>
                     <MudTd>
-                        <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" Color="Color.Success" Size="Size.Medium" OnClick="@((e) => ShowCardInfo(context.TimesheetCardId))"></MudIconButton>
-                        <MudIconButton Icon="@Icons.Material.Filled.ModeEdit" Color="Color.Warning" Size="Size.Medium"></MudIconButton>
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Medium" OnClick="@((e) => OpenDeleteDialog(@context))"></MudIconButton>
+                        <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" Color="Color.Success" Size="Size.Small" OnClick="@((e) => ShowCardInfo(context.TimesheetCardId))"></MudIconButton>
+                        <MudIconButton Icon="@Icons.Material.Filled.ModeEdit" Color="Color.Warning" Size="Size.Small"></MudIconButton>
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="@((e) => OpenDeleteDialog(@context))"></MudIconButton>
                     </MudTd>
                 </RowTemplate>
                 <PagerContent>
@@ -66,7 +60,7 @@
     }
     else
     {
-        <h2>@result.Message</h2>
+        <MudText Typo="Typo.h4" Align="Align.Center">Create your first Timesheet!</MudText>
     }
 
 </div>
@@ -77,6 +71,10 @@
     List<TimesheetCard> timesheets = new List<TimesheetCard>();
     ServiceResponse<List<TimesheetCard>> result;
     TimesheetCardPost request = new TimesheetCardPost();
+
+    bool success;
+    string[] errors = { };
+    MudForm form;
 
     protected override async Task OnInitializedAsync()
     {
@@ -93,8 +91,17 @@
         request.StartDate = _dateRange.Start;
         request.EndDate = _dateRange.End;
         var result = await TimesheetCardService.PostTimesheetCard(request);
-        Toaster.Success(result.Message);
+        if(result.Success == true)
+        {
+            Toaster.Success(result.Message);
+        }
+        else
+        {
+            Toaster.Error(result.Message);
+        }
+
         timesheets = (await TimesheetCardService.GetTimesheetCardsByLoggedUser()).Data;
+        await form.Validate();
     }
 
     async Task ShowCardInfo(Guid cardId)
