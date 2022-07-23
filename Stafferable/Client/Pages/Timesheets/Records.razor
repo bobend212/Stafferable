@@ -66,7 +66,7 @@
                     </GroupHeaderTemplate>
                     <RowTemplate>
                         <MudTd DataLabel=""></MudTd>
-                        <MudTd DataLabel="Date">@context.Date?.ToString("dd/MMM/yyyy")</MudTd>
+                        <MudTd DataLabel="Date">@context.Date?.ToString("d MMMM yyyy")</MudTd>
                         <MudTd DataLabel="Type">@context.Type</MudTd>
                         <MudTd DataLabel="Project">@context.Project</MudTd>
                         <MudTd Style="text-align: right" DataLabel="Time">@context.Time</MudTd>
@@ -129,7 +129,7 @@ else
         {
             Indentation = false,
             Expandable = false,
-            Selector = (e) => e.Date.Value.ToString("dd-MMMM yyy")
+            Selector = (e) => e.Date.Value.ToString("dddd").ToUpper()
         };
 
     private async Task ReturnToTimesheets()
