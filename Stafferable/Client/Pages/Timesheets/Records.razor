@@ -2,48 +2,53 @@
 @inject ITimesheetCardServiceClient TimesheetService
 @inject NavigationManager NavigationManager
 @inject IToaster Toaster
+@inject IDialogService DialogService
 @attribute [Authorize]
 
-<MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
-    <div class="row mb-3">
-        <div class="col-auto">
-            <MudDatePicker Culture="@CultureInfo.GetCultureInfo("pl-pl")" Label="Date" @bind-Date="request.Date" ShowWeekNumbers="true" Required="true" RequiredError="Date is required!" MinDate="@currentCard.StartDate" MaxDate="@currentCard.EndDate" StartMonth="@currentCard.StartDate" DisplayMonths="2" DisableToolbar="true" />
-        </div>
-
-        <div class="col-auto">
-            <MudTextField @bind-Value="request.Type" Label="Type" Variant="Variant.Text"></MudTextField>
-        </div>
-
-        <div class="col-auto">
-            <MudTextField @bind-Value="request.Project" Label="Project" Variant="Variant.Text"></MudTextField>
-        </div>
-
-        <div class="col-auto">
-            <MudNumericField @bind-Value="request.Time" Label="Time [h]" Variant="Variant.Text" Min="0" Max="10" />
-        </div>
-
-        <div class="col-auto" style="display:flex; align-items: flex-end">
-            <MudButton StartIcon="@Icons.Material.Filled.AddBox" IconColor="Color.Dark" OnClick="PostTimesheetRecord" Variant="Variant.Filled" Color="Color.Tertiary">Add</MudButton>
-        </div>
-    </div>
-</MudForm>
 <div style="display: flex; justify-content: space-between">
-    <h3>Timesheet: @currentCard.StartDate?.ToString("dd/MMM/yyyy") - @currentCard.EndDate?.ToString("dd/MMM/yyyy")</h3>
+    <MudText Typo="Typo.h4">Timesheet</MudText>
+    <MudText Typo="Typo.h4">@currentCard.StartDate?.ToString("dd-MMMM yyy") - @currentCard.EndDate?.ToString("dd-MMMM yyy")</MudText>
     <h3><button type="button" class="btn btn-outline-warning" @onclick="ReturnToTimesheets">Return</button></h3>
 </div>
+
+<MudPaper Elevation="4" Class="pa-2 mb-2">
+    <MudForm @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+        <div class="row mb-3 justify-content-center">
+            <div class="col-auto">
+                <MudDatePicker Culture="@CultureInfo.GetCultureInfo("pl-pl")" Label="Date" @bind-Date="request.Date" ShowWeekNumbers="true" Required="true" RequiredError="Date is required!" MinDate="@currentCard.StartDate" MaxDate="@currentCard.EndDate" StartMonth="@currentCard.StartDate" DisplayMonths="2" DisableToolbar="true" />
+            </div>
+
+            <div class="col-auto">
+                <MudTextField @bind-Value="request.Type" Label="Type" Variant="Variant.Text"></MudTextField>
+            </div>
+
+            <div class="col-auto">
+                <MudTextField @bind-Value="request.Project" Label="Project" Variant="Variant.Text"></MudTextField>
+            </div>
+
+            <div class="col-auto">
+                <MudNumericField @bind-Value="request.Time" Label="Time [h]" Variant="Variant.Text" Min="0" Max="10" />
+            </div>
+
+            <div class="col-auto" style="display:flex; align-items: flex-end">
+                <MudButton StartIcon="@Icons.Material.Filled.AddBox" IconColor="Color.Inherit" OnClick="PostTimesheetRecord" Variant="Variant.Filled" Color="Color.Success">Add</MudButton>
+            </div>
+        </div>
+    </MudForm>
+</MudPaper>
 
 @if (records != null)
 {
     <MudTabs Elevation="4" ApplyEffectsToContainer="true" PanelClass="pa-6" Rounded="true" Centered="true" Color="@Color.Primary">
         @foreach (var item in weekCollection.OrderBy(x => x).Distinct())
         {
-            <MudTabPanel Text="@item.ToString()">
+            <MudTabPanel Text="@item.ToString()" ToolTip="Week Number">
 
                 <MudTable Elevation="4" Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
                   Items="@records.Where(x => x.WeekNo == item)"
                   Virtualize="false"
                   GroupBy="@_groupDefinition"
-                  GroupHeaderStyle="background-color:var(--mud-palette-background-grey)"
+                  GroupHeaderStyle="background-color:var(--mud-palette-background-grey);"
                   GroupFooterClass="mb-4"
                   Dense="true"
                   MultiSelection="false"
@@ -54,9 +59,10 @@
                         <MudTh Style="font-weight: bold">Type</MudTh>
                         <MudTh Style="font-weight: bold">Project</MudTh>
                         <MudTh Style="text-align: right;font-weight: bold">Time</MudTh>
+                        <MudTh></MudTh>
                     </HeaderContent>
                     <GroupHeaderTemplate>
-                        <MudTh Class="mud-table-cell-custom-group" colspan="5">@($"Week: {context.Key}")</MudTh>
+                        <MudTh Class="mud-table-cell-custom-group" colspan="6">@($"{context.Key}")</MudTh>
                     </GroupHeaderTemplate>
                     <RowTemplate>
                         <MudTd DataLabel=""></MudTd>
@@ -64,21 +70,22 @@
                         <MudTd DataLabel="Type">@context.Type</MudTd>
                         <MudTd DataLabel="Project">@context.Project</MudTd>
                         <MudTd Style="text-align: right" DataLabel="Time">@context.Time</MudTd>
+                        <MudTd Style="text-align: right">
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Warning" Size="Size.Small" OnClick="@((e) => OpenUpdateDialog(@context))"></MudIconButton>
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" Size="Size.Small" OnClick="@((e) => OpenDeleteDialog(@context))"></MudIconButton>
+                        </MudTd>
                     </RowTemplate>
                     <GroupFooterTemplate>
-                        <MudTh Style="text-align: right" colspan="5">Weekly: @context.Items.Sum((e) => e.Time)</MudTh>
+                        <MudTh Style="text-align: right" colspan="6">Total: @context.Items.Sum((e) => e.Time)</MudTh>
                     </GroupFooterTemplate>
                     <FooterContent>
-                        <MudTh Style="text-align: right; font-weight: bold" colspan="5">Monthly Total: @currentCard?.TotalHours</MudTh>
+                        <MudTh Style="text-align: right; font-weight: bold" colspan="6">Monthly Total: @currentCard?.TotalHours</MudTh>
                     </FooterContent>
                 </MudTable>
 
             </MudTabPanel>
         }
     </MudTabs>
-
-
-
 }
 else
 {
@@ -122,7 +129,7 @@ else
         {
             Indentation = false,
             Expandable = false,
-            Selector = (e) => e.Date
+            Selector = (e) => e.Date.Value.ToString("dd-MMMM yyy")
         };
 
     private async Task ReturnToTimesheets()
@@ -139,5 +146,37 @@ else
         currentCard = (await TimesheetService.GetSingleCard(CardId)).Data;
         await form.Validate();
         weekCollection = WeekGrouping(records);
+    }
+
+    async Task OpenDeleteDialog(TimesheetRecord timesheetRecord)
+    {
+        var parameters = new DialogParameters { ["timesheetRecord"] = timesheetRecord };
+        var options = new DialogOptions { FullWidth = true };
+
+        var dialog = DialogService.Show<TimesheetRecordDeleteDialog>("Delete Timesheet Record", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            records = (await TimesheetService.GetTimesheetRecordsByCard(CardId)).Data;
+            currentCard = (await TimesheetService.GetSingleCard(CardId)).Data;
+            Toaster.Success("Record Removed");
+        }
+    }
+
+    async Task OpenUpdateDialog(TimesheetRecord record)
+    {
+        var parameters = new DialogParameters { ["record"] = record };
+        var options = new DialogOptions { FullWidth = true };
+
+        var dialog = DialogService.Show<TimesheetRecordUpdateDialog>("Update Record", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            records = (await TimesheetService.GetTimesheetRecordsByCard(CardId)).Data;
+            currentCard = (await TimesheetService.GetSingleCard(CardId)).Data;
+            Toaster.Success("Record Updated Successfully!");
+        }
     }
 }

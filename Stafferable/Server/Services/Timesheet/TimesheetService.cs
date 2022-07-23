@@ -133,7 +133,7 @@ namespace Stafferable.Server.Services.Timesheet
         public async Task<ServiceResponse<TimesheetRecord>> PostTimesheetRecord(TimesheetRecord model)
         {
             model.WeekNo = GetWeekNumber(model.Date);
-            
+
             TimesheetCard findCard = await _context.TimesheetCards.FirstOrDefaultAsync(x => x.TimesheetCardId == model.TimesheetCardId);
             findCard.TotalHours += model.Time;
 
@@ -147,6 +147,55 @@ namespace Stafferable.Server.Services.Timesheet
             CultureInfo ciCurr = CultureInfo.CurrentCulture;
             int weekNum = ciCurr.Calendar.GetWeekOfYear((DateTime)dtPassed, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
             return weekNum;
+        }
+
+        public async Task<ServiceResponse<bool>> DeleteTimesheetRecord(Guid recordId)
+        {
+            var findRecord = await _context.TimesheetRecords.FindAsync(recordId);
+            if (findRecord == null)
+            {
+                return new ServiceResponse<bool>()
+                {
+                    Success = false,
+                    Data = false,
+                    Message = "Record not found."
+                };
+            }
+
+            TimesheetCard findCard = await _context.TimesheetCards.FirstOrDefaultAsync(x => x.TimesheetCardId == findRecord.TimesheetCardId);
+            findCard.TotalHours -= findRecord.Time;
+
+            _context.TimesheetRecords.Remove(findRecord);
+            await _context.SaveChangesAsync();
+
+            return new ServiceResponse<bool> { Message = "Record Removed", Data = true };
+        }
+
+        public async Task<ServiceResponse<bool>> UpdateTimesheetRecord(TimesheetRecordUpdate model)
+        {
+            var findRecord = await _context.TimesheetRecords.FindAsync(model.RecordId);
+            if (findRecord == null)
+            {
+                return new ServiceResponse<bool>()
+                {
+                    Success = false,
+                    Message = "Record not found."
+                };
+            }
+
+            findRecord.WeekNo = GetWeekNumber(model.Date);
+            findRecord.Date = model.Date;
+            findRecord.Type = model.Type;
+            findRecord.Project = model.Project;
+
+            TimesheetCard findCard = await _context.TimesheetCards.FirstOrDefaultAsync(x => x.TimesheetCardId == findRecord.TimesheetCardId);
+            findCard.TotalHours -= findRecord.Time;
+            findRecord.Time = model.Time;
+            findCard.TotalHours += model.Time;
+
+            await _context.SaveChangesAsync();
+
+            return new ServiceResponse<bool> { Message = "Record Updated", Data = true };
         }
     }
 }

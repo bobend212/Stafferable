@@ -102,5 +102,19 @@ namespace Stafferable.Server.Controllers
 
             return Ok(response);
         }
+
+        [HttpDelete("record/{recordId}")]
+        public async Task<ActionResult<ServiceResponse<bool>>> DeleteTimesheetRecord(Guid recordId)
+        {
+            var response = await _timesheetService.DeleteTimesheetRecord(recordId);
+            return Ok(response);
+        }
+
+        [HttpPut("record-update")]
+        public async Task<ActionResult<ServiceResponse<bool>>> UpdateTimesheetRecord(TimesheetRecordUpdate request)
+        {
+            var result = await _timesheetService.UpdateTimesheetRecord(request);
+            return Ok(result);
+        }
     }
 }

@@ -2,7 +2,7 @@
 
 <MudDialog>
     <DialogContent>
-        <MudText>Do you really want to delete this Card?</MudText>
+        <MudText>Do you really want to delete this Record?</MudText>
         <MudText>This process cannot be undone.</MudText>
     </DialogContent>
     <DialogActions>
@@ -12,14 +12,14 @@
 </MudDialog>
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
-    [Parameter] public TimesheetCard timesheetCard { get; set; } = new TimesheetCard();
+    [Parameter] public TimesheetRecord timesheetRecord { get; set; } = new TimesheetRecord();
 
 
     void Cancel() => MudDialog.Cancel();
 
     async Task Delete()
     {
-        await TimesheetService.DeleteTimesheetCard(timesheetCard.TimesheetCardId);
-        MudDialog.Close(DialogResult.Ok(timesheetCard));
+        await TimesheetService.DeleteTimesheetRecord(timesheetRecord.RecordId);
+        MudDialog.Close(DialogResult.Ok(timesheetRecord));
     }
 }

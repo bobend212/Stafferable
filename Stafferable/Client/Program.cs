@@ -16,7 +16,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddToaster(config =>
 {
     config.PositionClass = Defaults.Classes.Position.BottomRight;
-    config.PreventDuplicates = true;
+    config.PreventDuplicates = false;
     config.NewestOnTop = true;
 });
 

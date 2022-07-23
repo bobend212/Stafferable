@@ -18,6 +18,7 @@ namespace Stafferable.Client.Services.Timesheet
             var result = await _http.GetFromJsonAsync<ServiceResponse<List<TimesheetCard>>>($"/api/Timesheet/my-timesheets");
             return result;
         }
+
         public async Task<ServiceResponse<TimesheetCard>> GetSingleCard(Guid cardId)
         {
             var result = await _http.GetFromJsonAsync<ServiceResponse<TimesheetCard>>($"/api/Timesheet/card/{cardId}");
@@ -45,6 +46,16 @@ namespace Stafferable.Client.Services.Timesheet
         {
             var result = await _http.PostAsJsonAsync("api/Timesheet/post-timesheet-record", request);
             return await result.Content.ReadFromJsonAsync<ServiceResponse<TimesheetRecord>>();
+        }
+
+        public async Task DeleteTimesheetRecord(Guid recordId)
+        {
+            var result = await _http.DeleteAsync($"/api/Timesheet/record/{recordId}");
+        }
+
+        public async Task UpdateTimesheetRecord(TimesheetRecord request)
+        {
+            var result = await _http.PutAsJsonAsync("api/Timesheet/record-update", request);
         }
     }
 }

@@ -1,0 +1,42 @@
+﻿@inject ITimesheetCardServiceClient TimesheetService
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3 mb-n1" /> Update Timesheet Record
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudGrid>
+
+            <MudItem xs="12">
+                <MudTextField T="string" Label="Type" Variant="Variant.Outlined" @bind-Value="record.Type" />
+                <MudTextField T="string" Label="Project" Variant="Variant.Outlined" @bind-Value="record.Project" />
+                <MudDatePicker class="mt-3" Label="Date" Variant="Variant.Outlined" @bind-Date="@record.Date" />
+                <MudNumericField @bind-Value="record.Time" Label="Time [h]" Variant="Variant.Text" Min="0" Max="10" />
+            </MudItem>
+
+        </MudGrid>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Info" OnClick="UpdateRecord">Submit</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    [Parameter] public TimesheetRecord record { get; set; } = new TimesheetRecord();
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    async Task UpdateRecord()
+    {
+        await TimesheetService.UpdateTimesheetRecord(record);
+        MudDialog.Close(DialogResult.Ok(record));
+    }
+}
