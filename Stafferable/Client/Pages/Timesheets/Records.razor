@@ -39,7 +39,7 @@
 
 @if (records != null)
 {
-    <MudTabs Elevation="4" ApplyEffectsToContainer="true" PanelClass="pa-6" Rounded="true" Centered="true" Color="@Color.Primary">
+    <MudTabs Elevation="4" ApplyEffectsToContainer="true" PanelClass="pa-3" Rounded="true" Centered="true" Color="@Color.Primary">
         @foreach (var item in weekCollection.OrderBy(x => x).Distinct())
         {
             <MudTabPanel Text="@item.ToString()" ToolTip="Week Number">
@@ -79,10 +79,10 @@
                         <MudTh Style="text-align: right" colspan="6">Total: @context.Items.Sum((e) => e.Time)</MudTh>
                     </GroupFooterTemplate>
                     <FooterContent>
-                        <MudTh Style="text-align: right; font-weight: bold" colspan="6">Monthly Total: @currentCard?.TotalHours</MudTh>
+                        <MudTh Style="text-align: right; font-weight: bold" colspan="6">Weekly total: @records.Where(x => x.WeekNo == item).Sum((e) => e.Time)</MudTh>
                     </FooterContent>
                 </MudTable>
-
+                <MudText Typo="Typo.h6" Align="Align.Right" Class="mt-2">Monthly Total: @currentCard?.TotalHours</MudText>
             </MudTabPanel>
         }
     </MudTabs>
@@ -172,11 +172,17 @@ else
         var dialog = DialogService.Show<TimesheetRecordUpdateDialog>("Update Record", parameters, options);
         var result = await dialog.Result;
 
-        if (!result.Cancelled)
+        records = (await TimesheetService.GetTimesheetRecordsByCard(CardId)).Data;
+
+        if (result.Cancelled)
         {
             records = (await TimesheetService.GetTimesheetRecordsByCard(CardId)).Data;
-            currentCard = (await TimesheetService.GetSingleCard(CardId)).Data;
+        }
+        else
+        {
             Toaster.Success("Record Updated Successfully!");
+            currentCard = (await TimesheetService.GetSingleCard(CardId)).Data;
+            weekCollection = WeekGrouping(records);
         }
     }
 }
