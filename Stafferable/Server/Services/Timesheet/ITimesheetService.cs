@@ -1,7 +1,4 @@
-﻿using Stafferable.Shared;
-using Stafferable.Shared.Timesheet;
-
-namespace Stafferable.Server.Services.Timesheet
+﻿namespace Stafferable.Server.Services.Timesheet
 {
     public interface ITimesheetService
     {
