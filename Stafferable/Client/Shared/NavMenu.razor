@@ -2,6 +2,7 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IToaster Toaster
+@using System.Security.Claims
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -24,7 +25,7 @@
 
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="projects">
-                        <span><i class="fa fa-lg fa-briefcase"></i> Projects [admin]</span>
+                        <span><i class="fa fa-lg fa-briefcase"></i> Projects</span>
                     </NavLink>
                 </div>
 
@@ -34,9 +35,20 @@
                     </NavLink>
                 </div>
 
+                <hr style="color:white" />
+                @if (@context.User.FindFirst(ClaimTypes.Role).Value == "Admin")
+                {
+                    <div class="nav-item px-3" >
+                        <NavLink class="nav-link" href="admin/timesheet">
+                            <span><i class="fa fa-lg fa-calendar-check-o"></i> Timesheet Admin</span>
+                        </NavLink>
+                    </div>
+                    <hr style="color:white" />
+                }
+
             </Authorized>
         </AuthorizeView>
-        <hr style="color:white" />
+
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="register">
                 <span><i class="fa fa-lg fa-user-plus"></i> Register</span>
