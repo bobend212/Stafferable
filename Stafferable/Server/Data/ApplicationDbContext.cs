@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Stafferable.Shared.Auth;
+using Stafferable.Shared.Project;
 using Stafferable.Shared.Timesheet;
 
 namespace Stafferable.Server.Data
@@ -13,5 +14,6 @@ namespace Stafferable.Server.Data
         public DbSet<User> Users { get; set; }
         public DbSet<TimesheetCard> TimesheetCards { get; set; }
         public DbSet<TimesheetRecord> TimesheetRecords { get; set; }
+        public DbSet<Project> Projects { get; set; }
     }
 }

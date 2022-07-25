@@ -1,7 +1,22 @@
-﻿namespace Stafferable.Shared.Project
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Stafferable.Shared.Project
 {
     public class Project
     {
+        [Key]
+        public Guid ProjectId { get; set; }
 
+        [Required]
+        public int Number { get; set; }
+
+        [Required]
+        public string Name { get; set; } = string.Empty;
+
+        [Required]
+        public string Status { get; set; } = "unknown";
+
+        public DateTime? DateAdded { get; set; } = DateTime.Now;
+        public DateTime? DateEdited { get; set; }
     }
 }
