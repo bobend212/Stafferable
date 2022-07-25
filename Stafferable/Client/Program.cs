@@ -1,11 +1,14 @@
 global using Microsoft.AspNetCore.Components.Authorization;
 global using Stafferable.Client.Services.Auth;
+global using Stafferable.Shared;
+global using Stafferable.Shared.Project;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
 using Sotsera.Blazor.Toaster.Core.Models;
 using Stafferable.Client;
+using Stafferable.Client.Services.ProjectService;
 using Stafferable.Client.Services.Timesheet;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -28,5 +31,6 @@ builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>();
 builder.Services.AddScoped<IAuthServiceClient, AuthServiceClient>();
 builder.Services.AddScoped<ITimesheetCardServiceClient, TimesheetCardServiceClient>();
+builder.Services.AddScoped<IProjectServiceClient, ProjectServiceClient>();
 
 await builder.Build().RunAsync();

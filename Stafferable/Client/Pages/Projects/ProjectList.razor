@@ -1,0 +1,35 @@
+﻿@page "/projects"
+@inject IProjectServiceClient ProjectService
+@inject NavigationManager NavigationManager
+
+<MudTable Items="@projects" Hover="true" Dense="true">
+    <HeaderContent>
+        <MudTh>Nr</MudTh>
+        <MudTh>Name</MudTh>
+        <MudTh>Status</MudTh>
+        <MudTh></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd>@context.Number</MudTd>
+        <MudTd>@context.Name</MudTd>
+        <MudTd>@context.Status</MudTd>
+        <MudTd>
+            <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" Color="Color.Success" Size="Size.Small" OnClick="@((e) => OpenProjectBoard(context.ProjectId))"></MudIconButton>
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    List<Project> projects = new List<Project>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        projects = (await ProjectService.GetAllProjects()).Data;
+    }
+
+    private async Task OpenProjectBoard(Guid projectId)
+    {
+        NavigationManager.NavigateTo($"project/{projectId}/board");
+    }
+
+}

@@ -1,0 +1,40 @@
+﻿@page "/project/{ProjectId:guid}/board"
+@inject IProjectServiceClient ProjectService
+
+<MudText Typo="Typo.h4"><b>@project.Number @project.Name</b></MudText>
+
+<MudTabs Border="true" Rounded="true" PanelClass="pa-3">
+    <MudTabPanel Text="Details">
+        <ProjectDetails Project="project"></ProjectDetails>
+    </MudTabPanel>
+    <MudTabPanel Text="Workload">
+        <MudText>Content Two</MudText>
+    </MudTabPanel>
+    <MudTabPanel Text="Tasks">
+        <MudText>Content Three</MudText>
+    </MudTabPanel>
+    <MudTabPanel Text="Estimating" Disabled="true">
+        <MudText>Content Disabled</MudText>
+    </MudTabPanel>
+    <MudTabPanel Text="Timeline" Disabled="true">
+        <MudText>Content Disabled</MudText>
+    </MudTabPanel>
+    <MudTabPanel Text="Progress" Disabled="true">
+        <MudText>Content Disabled</MudText>
+    </MudTabPanel>
+    <MudTabPanel Text="Team" Disabled="true">
+        <MudText>Content Disabled</MudText>
+    </MudTabPanel>
+</MudTabs>
+
+@code {
+    [Parameter]
+    public Guid ProjectId { get; set; }
+
+    Project project = new Project();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        project = (await ProjectService.GetSingleProject(ProjectId)).Data;
+    }
+}

@@ -1,0 +1,14 @@
+﻿<MudCard Outlined="true">
+    <MudCardContent>
+        <MudText>@Project.Number</MudText>
+        <MudText>@Project.Name</MudText>
+        <MudText>@Project.Status</MudText>
+        <MudText>@Project.DateAdded</MudText>
+        <MudText>@Project.DateEdited</MudText>
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter]
+    public Project Project { get; set; }
+}
