@@ -1,0 +1,77 @@
+﻿<MudGrid>
+    <MudItem xs="12" sm="3">
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.h6">Order Placed: <b>July 26, 2022</b></MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="3">
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.h6">Delivery Date: <b>July 26, 2022</b></MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="2">
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.h6" Align="Align.Center"><u>Design Info</u></MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="2">
+        <MudPaper Class="pa-4">
+            <MudText Typo="Typo.h6" Align="Align.Center"><u>Planner</u></MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="12">
+        <MudPaper Class="pa-4" style="margin-bottom: 2px" Elevation="4">
+            <div class="row">
+                <div class="col">
+                    <MudText Typo="Typo.h6">Slab, Setting Outs</MudText>
+                    <div class="d-flex">
+                        <ul>
+                            <li><MudText Typo="Typo.button" Class="mr-2">Required: <b>July 26, 2022</b></MudText></li>
+                            <li><MudText Typo="Typo.button" Class="mr-2">Estimated: <b>July 26, 2022</b></MudText></li>
+                            <li><MudText Typo="Typo.button" Class="mr-2">Issued: <b>July 26, 2022</b></MudText></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col">
+                    <MudText Typo="Typo.h6">Building Reg's</MudText>
+                    <div class="d-flex">
+                        <ul>
+                            <li><MudText Typo="Typo.button" Class="mr-2">Required: <b>July 26, 2022</b></MudText></li>
+                            <li><MudText Typo="Typo.button" Class="mr-2">Estimated: <b>July 26, 2022</b></MudText></li>
+                            <li><MudText Typo="Typo.button" Class="mr-2">Issued: <b>July 26, 2022</b></MudText></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col">
+                    <MudText Typo="Typo.h6">Full Set</MudText>
+                    <div class="d-flex">
+                        <ul>
+                            <li><MudText Typo="Typo.button" Class="mr-2">Required: <b>July 26, 2022</b></MudText></li>
+                            <li><MudText Typo="Typo.button" Class="mr-2">Estimated: <b>July 26, 2022</b></MudText></li>
+                            <li><MudText Typo="Typo.button" Class="mr-2">Issued: <b>July 26, 2022</b></MudText></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col">
+                    <MudText Typo="Typo.h6">Issuing</MudText>
+                    <div class="d-flex">
+                        <ul>
+                            <li><MudText Typo="Typo.button" Class="mr-2">Required: <b>July 26, 2022</b></MudText></li>
+                            <li><MudText Typo="Typo.button" Class="mr-2">Estimated: <b>July 26, 2022</b></MudText></li>
+                            <li><MudText Typo="Typo.button" Class="mr-2">Issued: <b>July 26, 2022</b></MudText></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </MudPaper>
+        <MudPaper Class="pa-4 mt-4">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true">Update</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Secondary" DisableElevation="true" Class="mx-2">Delete</MudButton>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Parameter]
+    public Project Project { get; set; }
+}

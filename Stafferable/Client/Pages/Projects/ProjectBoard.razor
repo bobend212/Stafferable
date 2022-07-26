@@ -1,14 +1,31 @@
 ﻿@page "/project/{ProjectId:guid}/board"
 @inject IProjectServiceClient ProjectService
 
-<MudText Typo="Typo.h4"><b>@project.Number @project.Name</b></MudText>
+<div style="display: flex; align-items: center; justify-content: space-between">
+    <div>
+        <div style="display: inline-block">
+            <MudText Typo="Typo.h4"><b>@project.Number @project.Name</b></MudText>
+        </div>
+        <div style="display: inline-block">
+            <MudMenu Icon="@Icons.Material.Filled.Settings" Color="Color.Primary">
+                <MudMenuItem>Update Project Details</MudMenuItem>
+                <MudMenuItem>Change Project Status</MudMenuItem>
+                <MudMenuItem>Archive</MudMenuItem>
+            </MudMenu>
+        </div>
+    </div>
+
+    <div style="display: inline-block">
+        <MudChip Variant="Variant.Filled" Color="Color.Info" Size="Size.Medium">In Progress</MudChip>
+    </div>
+</div>
 
 <MudTabs Border="true" Rounded="true" PanelClass="pa-3">
     <MudTabPanel Text="Details">
         <ProjectDetails Project="project"></ProjectDetails>
     </MudTabPanel>
     <MudTabPanel Text="Workload">
-        <MudText>Content Two</MudText>
+        <ProjectWorkload Project="project"/>
     </MudTabPanel>
     <MudTabPanel Text="Tasks">
         <MudText>Content Three</MudText>
