@@ -1,23 +1,71 @@
-﻿@*Grouped Table by Status (initially expanded?) with all Tasks assigned to the Project.*@
+﻿@inject ITaskServiceClient TaskService
+
+@*Grouped Table by Status (initially expanded?) with all Tasks assigned to the Project.*@
 
 @*
-TaskEntity props:
-TaskId
-Description
-AssignedTo
-CompleteDate
-Priority
-Status
-CreatedDate
-CreatedBy
-EditDate
-EditedBy
-Tags
-ProjectId
+    TaskEntity props:
+    TaskId
+    Description
+    AssignedTo
+    CompleteDate
+    Priority
+    Status
+    CreatedDate
+    CreatedBy
+    EditDate
+    EditedBy
+    Tags
+    ProjectId
 *@
 
+<MudTable Elevation="5" Hover="true" FixedHeader="true"
+          Items="@tasks"
+          Virtualize="false"
+          GroupBy="@_groupDefinition"
+          GroupHeaderStyle="background-color:var(--mud-palette-background-grey);"
+          GroupFooterClass="mb-2"
+          Dense="true"
+          MultiSelection="false"
+          Bordered="false" >
+    <HeaderContent>
+        <MudTh></MudTh>
+        <MudTh Style="font-weight: bold">Title</MudTh>
+        <MudTh Style="font-weight: bold">Description</MudTh>
+        <MudTh Style="font-weight: bold">AssignedTo</MudTh>
+        <MudTh Style="font-weight: bold">Complete Date</MudTh>
+        <MudTh Style="font-weight: bold">Priority</MudTh>
+    </HeaderContent>
+    <GroupHeaderTemplate>
+        <MudTh colspan="7">@($"{context.Key} ({context.Items.Count()})")</MudTh>
+    </GroupHeaderTemplate>
+    <RowTemplate>
+        <MudTd></MudTd>
+        <MudTd DataLabel="Type">@context.Title</MudTd>
+        <MudTd DataLabel="Type">@context.Description</MudTd>
+        <MudTd DataLabel="Type">@context.AssignedTo?.FName @context.AssignedTo?.LName</MudTd>
+        <MudTd DataLabel="Date">@context.CompleteDate?.ToString("d MMMM yyyy")</MudTd>
+        <MudTd DataLabel="Project">@context.Priority</MudTd>
+    </RowTemplate>
+@*    <FooterContent>
+        <MudTh Style="text-align: right; font-weight: bold" colspan="6">Weekly total: @records.Where(x => x.WeekNo == item).Sum((e) => e.Time)</MudTh>
+    </FooterContent>*@
+</MudTable>
 
 @code {
     [Parameter]
     public Project Project { get; set; }
+
+    List<TaskItem> tasks = new List<TaskItem>();
+
+    private TableGroupDefinition<TaskItem> _groupDefinition = new()
+        {
+            Indentation = false,
+            Expandable = true,
+            Selector = (e) => e.TaskStatus
+        };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        tasks = (await TaskService.GetAllTasksByProjectId(Project.ProjectId)).Data;
+    }
 }

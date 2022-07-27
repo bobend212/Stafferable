@@ -1,18 +1,18 @@
 global using AutoMapper;
-global using Stafferable.Shared;
-global using Stafferable.Shared.Timesheet;
-global using Stafferable.Shared.Project;
 global using Microsoft.EntityFrameworkCore;
 global using Stafferable.Server.Data;
+global using Stafferable.Shared;
+global using Stafferable.Shared.Project;
+global using Stafferable.Shared.Tasks;
+global using Stafferable.Shared.Timesheet;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Stafferable.Server;
-using Stafferable.Server.Data;
 using Stafferable.Server.Services.Auth;
-using Stafferable.Server.Services.Timesheet;
 using Stafferable.Server.Services.ProjectService;
+using Stafferable.Server.Services.TaskService;
+using Stafferable.Server.Services.Timesheet;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,6 +62,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITimesheetService, TimesheetService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddScoped<ITaskService, TaskService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>

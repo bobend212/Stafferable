@@ -9,6 +9,7 @@ using MudBlazor.Services;
 using Sotsera.Blazor.Toaster.Core.Models;
 using Stafferable.Client;
 using Stafferable.Client.Services.ProjectService;
+using Stafferable.Client.Services.TaskService;
 using Stafferable.Client.Services.Timesheet;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -32,5 +33,6 @@ builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthStateProvider>
 builder.Services.AddScoped<IAuthServiceClient, AuthServiceClient>();
 builder.Services.AddScoped<ITimesheetCardServiceClient, TimesheetCardServiceClient>();
 builder.Services.AddScoped<IProjectServiceClient, ProjectServiceClient>();
+builder.Services.AddScoped<ITaskServiceClient, TaskServiceClient>();
 
 await builder.Build().RunAsync();

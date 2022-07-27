@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Newtonsoft.Json;
+using Stafferable.Shared.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace Stafferable.Shared.Project
 {
@@ -18,5 +20,8 @@ namespace Stafferable.Shared.Project
 
         public DateTime? DateAdded { get; set; } = DateTime.Now;
         public DateTime? DateEdited { get; set; }
+
+        [JsonIgnore]
+        public List<TaskItem> Tasks { get; set; } = new List<TaskItem>();
     }
 }

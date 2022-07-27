@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Stafferable.Server.Data;
 
@@ -11,9 +12,10 @@ using Stafferable.Server.Data;
 namespace Stafferable.Server.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220727115111_TaskItemAdded")]
+    partial class TaskItemAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -254,7 +256,7 @@ namespace Stafferable.Server.Migrations
                         .HasForeignKey("EditorId");
 
                     b.HasOne("Stafferable.Shared.Project.Project", "Project")
-                        .WithMany("Tasks")
+                        .WithMany()
                         .HasForeignKey("ProjectId");
 
                     b.Navigation("AssignedTo");
@@ -291,11 +293,6 @@ namespace Stafferable.Server.Migrations
             modelBuilder.Entity("Stafferable.Shared.Auth.User", b =>
                 {
                     b.Navigation("TimesheetCards");
-                });
-
-            modelBuilder.Entity("Stafferable.Shared.Project.Project", b =>
-                {
-                    b.Navigation("Tasks");
                 });
 
             modelBuilder.Entity("Stafferable.Shared.Timesheet.TimesheetCard", b =>

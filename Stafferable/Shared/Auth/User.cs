@@ -1,4 +1,5 @@
-﻿using Stafferable.Shared.Timesheet;
+﻿using Stafferable.Shared.Tasks;
+using Stafferable.Shared.Timesheet;
 
 namespace Stafferable.Shared.Auth
 {
@@ -14,6 +15,7 @@ namespace Stafferable.Shared.Auth
 
         // additional properties
         public string FName { get; set; } = string.Empty;
+
         public string LName { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
         public string Phone { get; set; } = string.Empty;
