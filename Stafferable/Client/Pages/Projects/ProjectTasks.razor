@@ -1,0 +1,23 @@
+﻿@*Grouped Table by Status (initially expanded?) with all Tasks assigned to the Project.*@
+
+@*
+TaskEntity props:
+TaskId
+Description
+AssignedTo
+CompleteDate
+Priority
+Status
+CreatedDate
+CreatedBy
+EditDate
+EditedBy
+Tags
+ProjectId
+*@
+
+
+@code {
+    [Parameter]
+    public Project Project { get; set; }
+}

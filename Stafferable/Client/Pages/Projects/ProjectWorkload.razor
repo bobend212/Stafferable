@@ -1,10 +1,44 @@
-﻿<MudGrid>
+﻿<MudGrid Justify="Justify.Center">
+
     <MudItem xs="12" sm="3">
+        <MudPaper Class="pa-3" Elevation="5">
+            <MudText Typo="Typo.h6">Slab Stage</MudText>
+            <MudText Typo="Typo.body1"><b>Completed</b></MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="3">
+        <MudPaper Class="pa-3" Elevation="5">
+            <MudText Typo="Typo.h6">B'Regs' Stage</MudText>
+            <MudText Typo="Typo.body1"><b>In Progress</b></MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="3">
+        <MudPaper Class="pa-3" Elevation="5">
+            <MudText Typo="Typo.h6">Production Stage</MudText>
+            <MudText Typo="Typo.body1"><b>Not Started</b></MudText>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="3">
+        <MudPaper Class="pa-1 text-center" Elevation="5">
+            <div class="row">
+                <div class="col">
+                    <MudText Typo="Typo.body2" Align="Align.Center">Drawings Received?</MudText>
+                    <MudCheckBox @bind-Checked="@TestCheck1" Dense="false" Color="Color.Primary" Disabled="true"></MudCheckBox>
+                </div>
+                <div class="col">
+                    <MudText Typo="Typo.body2" Align="Align.Center">Engineering Received?</MudText>
+                    <MudCheckBox @bind-Checked="@TestCheck2" Dense="false" Color="Color.Primary" Disabled="true"></MudCheckBox>
+                </div>
+            </div>
+        </MudPaper>
+    </MudItem>
+
+    <MudItem xs="12" sm="4">
         <MudPaper Class="pa-4">
             <MudText Typo="Typo.h6">Order Placed: <b>July 26, 2022</b></MudText>
         </MudPaper>
     </MudItem>
-    <MudItem xs="12" sm="3">
+    <MudItem xs="12" sm="4">
         <MudPaper Class="pa-4">
             <MudText Typo="Typo.h6">Delivery Date: <b>July 26, 2022</b></MudText>
         </MudPaper>
@@ -19,6 +53,7 @@
             <MudText Typo="Typo.h6" Align="Align.Center"><u>Planner</u></MudText>
         </MudPaper>
     </MudItem>
+
     <MudItem xs="12" sm="12">
         <MudPaper Class="pa-4" style="margin-bottom: 2px" Elevation="4">
             <div class="row">
@@ -64,6 +99,9 @@
                 </div>
             </div>
         </MudPaper>
+        <MudPaper Class=" mt-4">
+            <MudTextField T="string" Label="Comments" Variant="Variant.Filled" Text="@sampleText" Lines="3" />
+        </MudPaper>
         <MudPaper Class="pa-4 mt-4">
             <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true">Update</MudButton>
             <MudButton Variant="Variant.Filled" Color="Color.Secondary" DisableElevation="true" Class="mx-2">Delete</MudButton>
@@ -74,4 +112,9 @@
 @code {
     [Parameter]
     public Project Project { get; set; }
+
+    bool TestCheck1 = true;
+    bool TestCheck2 = false;
+    string sampleText = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+
 }
