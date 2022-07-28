@@ -25,7 +25,7 @@ namespace Stafferable.Shared.Tasks
         public DateTime? CompleteDate { get; set; }
 
         [Required]
-        public string TaskStatus { get; set; } = "not started";
+        public string TaskStatus { get; set; } = "Not Started";
 
         [Required]
         public string Priority { get; set; } = "Medium";

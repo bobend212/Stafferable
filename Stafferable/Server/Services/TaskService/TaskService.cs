@@ -56,7 +56,7 @@
 
             findTask.DateEdited = DateTime.Now;
             findTask.CompleteDate = DateTime.Now;
-            findTask.TaskStatus = "done";
+            findTask.TaskStatus = "Done";
             findTask.IsComplete = true;
             findTask.EditorId = model.EditorId;
 

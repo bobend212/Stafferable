@@ -2,17 +2,32 @@
 @inject IProjectServiceClient ProjectService
 @inject NavigationManager NavigationManager
 
-<MudTable Items="@projects" Hover="true" Dense="true">
+<MudText Typo="Typo.h4" Class="mb-2">Project Database</MudText>
+
+<MudTable Items="@projects" Hover="true" Dense="true" CustomHeader="true" Bordered="true">
     <HeaderContent>
-        <MudTh>Nr</MudTh>
-        <MudTh>Name</MudTh>
-        <MudTh>Status</MudTh>
-        <MudTh></MudTh>
+        <MudTHeadRow>
+            <MudTh Style="text-align: center;" colspan="3">Info</MudTh>
+            <MudTh Style="text-align: center;" colspan="3">Tasks</MudTh>
+            <MudTh colspan="1"></MudTh>
+        </MudTHeadRow>
+        <MudTHeadRow Class="header-centered">
+            <MudTh>Nr</MudTh>
+            <MudTh>Name</MudTh>
+            <MudTh>Status</MudTh>
+            <MudTh>ToDo</MudTh>
+            <MudTh>Completed</MudTh>
+            <MudTh>Progress</MudTh>
+            <MudTh></MudTh>
+        </MudTHeadRow>
     </HeaderContent>
     <RowTemplate>
         <MudTd>@context.Number</MudTd>
         <MudTd>@context.Name</MudTd>
         <MudTd>@context.Status</MudTd>
+        <MudTd>@context.Tasks.Where(x => x.IsComplete == true).Count()</MudTd>
+        <MudTd>@context.Tasks.Where(x => x.IsComplete == true).Count()</MudTd>
+        <MudTd>@context.Tasks.Where(x => x.IsComplete == true).Count()</MudTd>
         <MudTd>
             <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" Color="Color.Success" Size="Size.Small" OnClick="@((e) => OpenProjectBoard(context.ProjectId))"></MudIconButton>
         </MudTd>

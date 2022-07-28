@@ -13,37 +13,49 @@
 else
 {
     <MudTable Elevation="5" Hover="true" FixedHeader="true"
-          Items="@tasks.OrderBy(x => x.DeadlineDate)"
+          Items="@tasks"
           Virtualize="false"
           GroupBy="@_groupDefinition"
           GroupHeaderStyle="background-color:var(--mud-palette-background-grey);"
           GroupFooterClass="mb-2"
           Dense="true"
           MultiSelection="false"
-          Bordered="false"
+          Bordered="true"
           RowStyleFunc="@_rowStyleFunc">
         <HeaderContent>
             <MudTh></MudTh>
-            <MudTh Style="font-weight: bold">Title</MudTh>
-            <MudTh Style="font-weight: bold">Description</MudTh>
-            <MudTh Style="font-weight: bold">AssignedTo</MudTh>
-            <MudTh Style="font-weight: bold">Deadline</MudTh>
-            <MudTh Style="font-weight: bold">Complete Date</MudTh>
-            <MudTh Style="font-weight: bold">Priority</MudTh>
+            <MudTh Style="font-weight: bold; text-align: center">Title</MudTh>
+            <MudTh Style="font-weight: bold; text-align: center">Description</MudTh>
+            <MudTh Style="font-weight: bold; text-align: center">AssignedTo</MudTh>
+            <MudTh Style="font-weight: bold; text-align: center">Deadline</MudTh>
+            <MudTh Style="font-weight: bold; text-align: center">Complete Date</MudTh>
+            <MudTh Style="font-weight: bold; text-align: center">Priority</MudTh>
         </HeaderContent>
         <GroupHeaderTemplate>
-            <MudTh colspan="7">@($"{context.Key} ({context.Items.Count()})")</MudTh>
+            <MudTh Style="text-align: left" colspan="9">
+                <MudBadge Content="@context.Items.Count()" Class="pr-2" Origin="Origin.CenterRight">
+                    <MudText Typo="Typo.caption">@context.Key</MudText>
+                </MudBadge>
+            </MudTh>
         </GroupHeaderTemplate>
         <RowTemplate>
-            <MudTd><MudCheckBox @onclick="(e) => CompleteTask(context, e)" @bind-Checked="context.IsComplete" Dense="true" Color="Color.Success" Disabled="context.IsComplete"></MudCheckBox></MudTd>
-            <MudTd DataLabel="Type">@context.Title</MudTd>
-            <MudTd DataLabel="Type">@context.Description</MudTd>
-            <MudTd DataLabel="Type">@context.AssignedTo?.FName @context.AssignedTo?.LName</MudTd>
-            <MudTd DataLabel="Date">@context.DeadlineDate?.ToString("d MMMM yyyy")</MudTd>
-            <MudTd DataLabel="Date">@context.CompleteDate?.ToString("d MMMM yyyy")</MudTd>
-            <MudTd DataLabel="Project">@context.Priority</MudTd>
-        </RowTemplate>
-    </MudTable>
+            <MudTd>
+                <div style="display: flex; justify-content: space-evenly; align-items: baseline">
+                    <MudCheckBox @onclick="(e) => CompleteTask(context, e)" @bind-Checked="context.IsComplete" Dense="true" Color="Color.Success" Disabled="context.IsComplete"></MudCheckBox>
+                    @if (context.DeadlineDate <= DateTime.Now && context.IsComplete != true)
+                    {
+                    <MudIcon Icon="@Icons.Material.Filled.Warning" Title="Overdue" Color="Color.Error" />
+                    }
+            </div>
+        </MudTd>
+        <MudTd Style="text-align: center; border-left: 1px solid black">@context.Title</MudTd>
+        <MudTd Style="text-align: center">@context.Description</MudTd>
+        <MudTd Style="text-align: center">@context.AssignedTo?.FName @context.AssignedTo?.LName</MudTd>
+        <MudTd Style="text-align: center">@context.DeadlineDate?.ToString("d MMMM yyyy")</MudTd>
+        <MudTd Style="text-align: center">@context.CompleteDate?.ToString("d MMMM yyyy")</MudTd>
+        <MudTd Style="text-align: center">@context.Priority</MudTd>
+    </RowTemplate>
+</MudTable>
 }
 
 @code {
@@ -87,8 +99,8 @@ else
 
     private Func<TaskItem, int, string> _rowStyleFunc => (x, i) =>
     {
-    if (x.DeadlineDate < DateTime.Now && x.IsComplete != true)
-        return "background-color: #F1CCD3";
-    return "";
+        if (x.DeadlineDate < DateTime.Now && x.IsComplete != true)
+            return "background-color: #F1CCD3";
+        return "";
     };
 }

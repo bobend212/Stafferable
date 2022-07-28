@@ -39,7 +39,7 @@
 
 @if (records != null)
 {
-    <MudTabs Elevation="4" ApplyEffectsToContainer="true" PanelClass="pa-3" Rounded="true" Centered="true" Color="@Color.Primary">
+    <MudTabs Elevation="4" ApplyEffectsToContainer="true" PanelClass="pa-3" Rounded="true" Centered="true" Border="true">
         @foreach (var item in weekCollection.OrderBy(x => x).Distinct())
         {
             <MudTabPanel Text="@item.ToString()" ToolTip="Week Number">

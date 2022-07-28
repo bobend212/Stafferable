@@ -21,7 +21,6 @@ namespace Stafferable.Shared.Project
         public DateTime? DateAdded { get; set; } = DateTime.Now;
         public DateTime? DateEdited { get; set; }
 
-        [JsonIgnore]
         public List<TaskItem> Tasks { get; set; } = new List<TaskItem>();
     }
 }

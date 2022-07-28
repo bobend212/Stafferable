@@ -11,7 +11,7 @@
 
         public async Task<ServiceResponse<List<Project>>> GetAllProjects()
         {
-            var projects = await _context.Projects.ToListAsync();
+            var projects = await _context.Projects.Include(x => x.Tasks).ToListAsync();
 
             var response = new ServiceResponse<List<Project>>()
             {

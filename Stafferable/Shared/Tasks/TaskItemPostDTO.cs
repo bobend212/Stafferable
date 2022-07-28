@@ -11,7 +11,7 @@
         public DateTime? DeadlineDate { get; set; }
         public bool IsComplete { get; set; } = false;
         public DateTime? CompleteDate { get; set; }
-        public string TaskStatus { get; set; } = "not started";
+        public string TaskStatus { get; set; } = "Not Started";
         public string Priority { get; set; } = "Medium";
         public DateTime? DateCreated { get; set; } = DateTime.Now;
         public DateTime? DateEdited { get; set; }
