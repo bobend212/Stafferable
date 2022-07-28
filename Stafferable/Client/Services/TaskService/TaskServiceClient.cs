@@ -11,11 +11,21 @@ namespace Stafferable.Client.Services.TaskService
         {
             _http = http;
         }
-
         public async Task<ServiceResponse<List<TaskItem>>> GetAllTasksByProjectId(Guid projectId)
         {
-            var result = await _http.GetFromJsonAsync<ServiceResponse<List<TaskItem>>>($"/api/Tasks/{projectId}/tasks");
-            return result;
+            ServiceResponse<List<TaskItem>> result = await _http.GetFromJsonAsync<ServiceResponse<List<TaskItem>>>($"/api/Tasks/{projectId}/tasks");
+            return result!;
+        }
+
+        public async Task<ServiceResponse<TaskItem>> PostTask(TaskItem request)
+        {
+            var result = await _http.PostAsJsonAsync("api/Tasks/post-task", request);
+            return await result.Content.ReadFromJsonAsync<ServiceResponse<TaskItem>>();
+        }
+
+        public async Task CompleteTask(TaskItem request)
+        {
+            var result = await _http.PutAsJsonAsync("api/Tasks/complete-task", request);
         }
     }
 }

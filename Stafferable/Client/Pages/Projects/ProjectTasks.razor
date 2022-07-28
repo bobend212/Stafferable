@@ -1,55 +1,50 @@
 ﻿@inject ITaskServiceClient TaskService
+@inject IDialogService DialogService
+@inject IToaster Toaster
 
-@*Grouped Table by Status (initially expanded?) with all Tasks assigned to the Project.*@
+<div class="m-2">
+    <MudFab Color="Color.Tertiary" StartIcon="@Icons.Outlined.Add" Label="Add Task" OnClick="@((e) => OpenCrateUpdateTaskDialog())" />
+</div>
 
-@*
-    TaskEntity props:
-    TaskId
-    Description
-    AssignedTo
-    CompleteDate
-    Priority
-    Status
-    CreatedDate
-    CreatedBy
-    EditDate
-    EditedBy
-    Tags
-    ProjectId
-*@
-
-<MudTable Elevation="5" Hover="true" FixedHeader="true"
-          Items="@tasks"
+@if (tasks == null)
+{
+    <p>No tasks yet.</p>
+}
+else
+{
+    <MudTable Elevation="5" Hover="true" FixedHeader="true"
+          Items="@tasks.OrderBy(x => x.DeadlineDate)"
           Virtualize="false"
           GroupBy="@_groupDefinition"
           GroupHeaderStyle="background-color:var(--mud-palette-background-grey);"
           GroupFooterClass="mb-2"
           Dense="true"
           MultiSelection="false"
-          Bordered="false" >
-    <HeaderContent>
-        <MudTh></MudTh>
-        <MudTh Style="font-weight: bold">Title</MudTh>
-        <MudTh Style="font-weight: bold">Description</MudTh>
-        <MudTh Style="font-weight: bold">AssignedTo</MudTh>
-        <MudTh Style="font-weight: bold">Complete Date</MudTh>
-        <MudTh Style="font-weight: bold">Priority</MudTh>
-    </HeaderContent>
-    <GroupHeaderTemplate>
-        <MudTh colspan="7">@($"{context.Key} ({context.Items.Count()})")</MudTh>
-    </GroupHeaderTemplate>
-    <RowTemplate>
-        <MudTd></MudTd>
-        <MudTd DataLabel="Type">@context.Title</MudTd>
-        <MudTd DataLabel="Type">@context.Description</MudTd>
-        <MudTd DataLabel="Type">@context.AssignedTo?.FName @context.AssignedTo?.LName</MudTd>
-        <MudTd DataLabel="Date">@context.CompleteDate?.ToString("d MMMM yyyy")</MudTd>
-        <MudTd DataLabel="Project">@context.Priority</MudTd>
-    </RowTemplate>
-@*    <FooterContent>
-        <MudTh Style="text-align: right; font-weight: bold" colspan="6">Weekly total: @records.Where(x => x.WeekNo == item).Sum((e) => e.Time)</MudTh>
-    </FooterContent>*@
-</MudTable>
+          Bordered="false"
+          RowStyleFunc="@_rowStyleFunc">
+        <HeaderContent>
+            <MudTh></MudTh>
+            <MudTh Style="font-weight: bold">Title</MudTh>
+            <MudTh Style="font-weight: bold">Description</MudTh>
+            <MudTh Style="font-weight: bold">AssignedTo</MudTh>
+            <MudTh Style="font-weight: bold">Deadline</MudTh>
+            <MudTh Style="font-weight: bold">Complete Date</MudTh>
+            <MudTh Style="font-weight: bold">Priority</MudTh>
+        </HeaderContent>
+        <GroupHeaderTemplate>
+            <MudTh colspan="7">@($"{context.Key} ({context.Items.Count()})")</MudTh>
+        </GroupHeaderTemplate>
+        <RowTemplate>
+            <MudTd><MudCheckBox @onclick="(e) => CompleteTask(context, e)" @bind-Checked="context.IsComplete" Dense="true" Color="Color.Success" Disabled="context.IsComplete"></MudCheckBox></MudTd>
+            <MudTd DataLabel="Type">@context.Title</MudTd>
+            <MudTd DataLabel="Type">@context.Description</MudTd>
+            <MudTd DataLabel="Type">@context.AssignedTo?.FName @context.AssignedTo?.LName</MudTd>
+            <MudTd DataLabel="Date">@context.DeadlineDate?.ToString("d MMMM yyyy")</MudTd>
+            <MudTd DataLabel="Date">@context.CompleteDate?.ToString("d MMMM yyyy")</MudTd>
+            <MudTd DataLabel="Project">@context.Priority</MudTd>
+        </RowTemplate>
+    </MudTable>
+}
 
 @code {
     [Parameter]
@@ -68,4 +63,32 @@
     {
         tasks = (await TaskService.GetAllTasksByProjectId(Project.ProjectId)).Data;
     }
+
+    async Task OpenCrateUpdateTaskDialog()
+    {
+        var parameters = new DialogParameters { ["project"] = Project };
+        var options = new DialogOptions { FullWidth = true, Position = DialogPosition.TopCenter };
+
+        var dialog = DialogService.Show<TaskCreateOrUpdateDialog>("New Task", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            tasks = (await TaskService.GetAllTasksByProjectId(Project.ProjectId)).Data;
+        }
+    }
+
+    async Task CompleteTask(TaskItem taskSelected, object checkedValue)
+    {
+        await TaskService.CompleteTask(taskSelected);
+        tasks = (await TaskService.GetAllTasksByProjectId(Project.ProjectId)).Data;
+        Toaster.Success($"Task Completed");
+    }
+
+    private Func<TaskItem, int, string> _rowStyleFunc => (x, i) =>
+    {
+    if (x.DeadlineDate < DateTime.Now && x.IsComplete != true)
+        return "background-color: #F1CCD3";
+    return "";
+    };
 }

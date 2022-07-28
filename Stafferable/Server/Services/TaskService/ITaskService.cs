@@ -3,5 +3,9 @@
     public interface ITaskService
     {
         Task<ServiceResponse<List<TaskItem>>> GetAllTasksByProjectId(Guid projectId);
+
+        Task<ServiceResponse<TaskItem>> PostTask(TaskItem model);
+
+        Task<ServiceResponse<bool>> CompleteTask(TaskCompleteDTO model);
     }
 }

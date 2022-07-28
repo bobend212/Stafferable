@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Stafferable.Server.Data;
-using Stafferable.Shared;
+﻿using Microsoft.IdentityModel.Tokens;
 using Stafferable.Shared.Auth;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;

@@ -11,7 +11,7 @@
 
         public async Task<ServiceResponse<List<TaskItem>>> GetAllTasksByProjectId(Guid projectId)
         {
-            var response = new ServiceResponse<List<TaskItem>>();
+            ServiceResponse<List<TaskItem>> response = new ServiceResponse<List<TaskItem>>();
             var findProject = await _context.Projects.FirstOrDefaultAsync(x => x.ProjectId == projectId);
             var tasks = await _context.Tasks.Where(u => u.ProjectId == projectId).Include(x => x.AssignedTo).ToListAsync();
 
@@ -32,6 +32,39 @@
             }
 
             return response;
+        }
+
+        public async Task<ServiceResponse<TaskItem>> PostTask(TaskItem model)
+        {
+            _context.Tasks.Add(model);
+            await _context.SaveChangesAsync();
+
+            return new ServiceResponse<TaskItem> { Data = model, Message = "New Task added!" };
+        }
+
+        public async Task<ServiceResponse<bool>> CompleteTask(TaskCompleteDTO model)
+        {
+            var findTask = await _context.Tasks.FindAsync(model.TaskItemId);
+            if (findTask == null)
+            {
+                return new ServiceResponse<bool>()
+                {
+                    Success = false,
+                    Message = "Task not found."
+                };
+            }
+
+            findTask.DateEdited = DateTime.Now;
+            findTask.CompleteDate = DateTime.Now;
+            findTask.TaskStatus = "done";
+            findTask.IsComplete = true;
+            findTask.EditorId = model.EditorId;
+
+            _context.Entry(findTask).State = EntityState.Modified;
+
+            await _context.SaveChangesAsync();
+
+            return new ServiceResponse<bool> { Message = "Task Completed", Data = true };
         }
     }
 }
