@@ -42,8 +42,7 @@
             </MudProgressLinear>
         </MudTd>
         <MudTd>
-            @*<MudIconButton Icon="@Icons.Material.Filled.OpenInNew" Color="Color.Success" Size="Size.Small" OnClick="@((e) => OpenProjectBoard(context.ProjectId))"></MudIconButton>*@
-            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Warning" Size="Size.Small"></MudIconButton>
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Warning" Size="Size.Small" OnClick="@((e) => OpenUpdateDialog(@context))"></MudIconButton>
         </MudTd>
     </RowTemplate>
     <PagerContent>
@@ -103,10 +102,23 @@
 
     async Task CreateNewProjectDialogOpen()
     {
-        //var parameters = new DialogParameters { ["project"] = project };
         var options = new DialogOptions { FullWidth = true, Position = DialogPosition.TopCenter };
 
         var dialog = DialogService.Show<ProjectCreateDialog>("New Project", options);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            projects = (await ProjectService.GetAllProjects()).Data;
+        }
+    }
+
+    async Task OpenUpdateDialog(Project project)
+    {
+        var parameters = new DialogParameters { ["project"] = project };
+        var options = new DialogOptions { FullWidth = true, Position = DialogPosition.TopCenter };
+
+        var dialog = DialogService.Show<ProjectUpdateDialog>("Update Project", parameters, options);
         var result = await dialog.Result;
 
         if (!result.Cancelled)

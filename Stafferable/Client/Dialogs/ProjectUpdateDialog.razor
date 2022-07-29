@@ -4,13 +4,13 @@
 <MudDialog>
     <TitleContent>
         <MudText Typo="Typo.h6">
-            <MudIcon Icon="@Icons.Material.Filled.Add" Class="mb-1" />
-            New Project
+            <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mb-1" />
+            Update Project - @project.Number @project.Name
         </MudText>
     </TitleContent>
     <DialogContent>
         <MudForm>
-            <MudTextField T="int?" Label="Number" Required="true" Variant="Variant.Filled" @bind-Value="project.Number" Mask="@(new PatternMask("00000"))" />
+            <MudTextField T="int" Label="Number" Required="true" Variant="Variant.Filled" @bind-Value="project.Number" Mask="@(new PatternMask("00000"))" />
             <MudTextField T="string" Label="Name" Required="true" Variant="Variant.Filled" @bind-Value="project.Name" />
             <MudSelect Dense="true" T="string" Label="Status" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter" @bind-Value="project.Status">
                 @foreach (var status in statuses)
@@ -23,14 +23,14 @@
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
         <MudSpacer />
-        <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="Submit">Add</MudButton>
+        <MudButton Color="Color.Warning" Variant="Variant.Filled" OnClick="Submit">Update</MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
-    [Parameter] public ProjectPostDTO project { get; set; } = new ProjectPostDTO();
+    [Parameter] public Project project { get; set; } = new Project();
 
     private string[] statuses =
     {
@@ -41,16 +41,8 @@
 
     private async Task Submit()
     {
-        var result = await ProjectService.PostProject(project);
-        if (result.Success == true)
-        {
-            Toaster.Success(result.Message);
-        }
-        else
-        {
-            Toaster.Error(result.Message);
-        }
-        ;
+        await ProjectService.UpdateProject(project);
+        Toaster.Success("Project Updated");
         MudDialog.Close(DialogResult.Ok(true));
     }
 }

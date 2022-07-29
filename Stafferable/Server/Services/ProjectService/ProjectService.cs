@@ -3,12 +3,10 @@
     public class ProjectService : IProjectService
     {
         private readonly ApplicationDbContext _context;
-        private readonly IMapper _mapper;
 
-        public ProjectService(ApplicationDbContext context, IMapper mapper)
+        public ProjectService(ApplicationDbContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
 
         public async Task<ServiceResponse<List<Project>>> GetAllProjects()
