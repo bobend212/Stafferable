@@ -6,7 +6,7 @@
 
         Task<ServiceResponse<Project>> GetSingleProject(Guid projectId);
 
-        Task<ServiceResponse<Project>> PostProject(Project request);
+        Task<ServiceResponse<Project>> PostProject(ProjectPostDTO request);
 
         Task DeleteProject(Guid projectId);
 

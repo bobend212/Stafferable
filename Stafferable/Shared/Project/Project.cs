@@ -16,7 +16,7 @@ namespace Stafferable.Shared.Project
         public string Name { get; set; } = string.Empty;
 
         [Required]
-        public string Status { get; set; } = "unknown";
+        public string Status { get; set; } = "New";
 
         public DateTime? DateAdded { get; set; } = DateTime.Now;
         public DateTime? DateEdited { get; set; }

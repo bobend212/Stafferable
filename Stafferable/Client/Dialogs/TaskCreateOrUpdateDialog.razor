@@ -18,7 +18,7 @@
                     <MudSelectItem T="int?" Value="@feline">@feline</MudSelectItem>
                 }
             </MudSelect>
-            <MudDatePicker Label="Deadline" Variant="Variant.Filled" DisableToolbar="true" @bind-Date="task.DeadlineDate" />
+            <MudDatePicker Culture="@CultureInfo.GetCultureInfo("pl-pl")" Label="Deadline" Variant="Variant.Filled" DisableToolbar="true" @bind-Date="task.DeadlineDate" />
             <MudSelect Dense="true" T="string" Label="Priority" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter" @bind-Value="task.Priority">
                 @foreach (var level in priorityLevels)
                 {

@@ -3,10 +3,12 @@
     public class ProjectService : IProjectService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public ProjectService(ApplicationDbContext context)
+        public ProjectService(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<ServiceResponse<List<Project>>> GetAllProjects()
@@ -39,12 +41,19 @@
             return response;
         }
 
-        public async Task<ServiceResponse<Project>> PostProject(Project model)
+        public async Task<ServiceResponse<Project>> PostProject(ProjectPostDTO model)
         {
-            _context.Projects.Add(model);
+            var newProject = new Project
+            {
+                Number = (int)model.Number,
+                Name = model.Name,
+                Status = model.Status
+            };
+
+            _context.Projects.Add(newProject);
             await _context.SaveChangesAsync();
 
-            return new ServiceResponse<Project> { Data = model, Message = "New Project added!" };
+            return new ServiceResponse<Project> { Data = newProject, Message = "New Project added!" };
         }
 
         public async Task<ServiceResponse<bool>> DeleteProject(Guid projectId)

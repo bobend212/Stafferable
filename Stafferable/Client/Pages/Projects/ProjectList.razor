@@ -1,23 +1,30 @@
 ﻿@page "/projects"
 @inject IProjectServiceClient ProjectService
+@inject IDialogService DialogService
 @inject NavigationManager NavigationManager
 
 <MudText Typo="Typo.h4" Class="mb-2">Project Database</MudText>
 
-<MudTable Items="@projects" Hover="true" Dense="true" CustomHeader="true" Bordered="true">
+<MudTable Items="@projects" Hover="true" Dense="true" CustomHeader="true" Bordered="true" Breakpoint="Breakpoint.Sm" Elevation="4" OnRowClick="RowClickEvent" T="Project"
+          Striped="true" HeaderClass="table-head-bordered" Filter="new Func<Project,bool>(FilterFunc1)" @bind-SelectedItem="selectedItem1">
+    <ToolBarContent>
+        <MudFab Color="Color.Tertiary" StartIcon="@Icons.Outlined.Add" Label="New Project" Size="Size.Medium" OnClick="@((e) => CreateNewProjectDialogOpen())" />
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString1" Placeholder="Search by Number or Name" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
     <HeaderContent>
         <MudTHeadRow>
-            <MudTh Style="text-align: center;" colspan="3">Info</MudTh>
-            <MudTh Style="text-align: center;" colspan="3">Tasks</MudTh>
+            <MudTh Style="text-align: center;" colspan="3"><MudText Typo="Typo.h6">Info</MudText></MudTh>
+            <MudTh Style="text-align: center;" colspan="3"><MudText Typo="Typo.h6">Tasks</MudText></MudTh>
             <MudTh colspan="1"></MudTh>
         </MudTHeadRow>
         <MudTHeadRow Class="header-centered">
-            <MudTh>Nr</MudTh>
-            <MudTh>Name</MudTh>
-            <MudTh>Status</MudTh>
-            <MudTh>ToDo</MudTh>
-            <MudTh>Completed</MudTh>
-            <MudTh>Progress</MudTh>
+            <MudTh Style="font-weight: bold">Number</MudTh>
+            <MudTh Style="font-weight: bold">Name</MudTh>
+            <MudTh Style="font-weight: bold">Status</MudTh>
+            <MudTh Style="font-weight: bold">To be done</MudTh>
+            <MudTh Style="font-weight: bold">Completed</MudTh>
+            <MudTh Style="font-weight: bold">Progress</MudTh>
             <MudTh></MudTh>
         </MudTHeadRow>
     </HeaderContent>
@@ -25,17 +32,29 @@
         <MudTd>@context.Number</MudTd>
         <MudTd>@context.Name</MudTd>
         <MudTd>@context.Status</MudTd>
-        <MudTd>@context.Tasks.Where(x => x.IsComplete == true).Count()</MudTd>
-        <MudTd>@context.Tasks.Where(x => x.IsComplete == true).Count()</MudTd>
-        <MudTd>@context.Tasks.Where(x => x.IsComplete == true).Count()</MudTd>
+        <MudTd>@context.Tasks.Where(x => x.TaskStatus == "Not Started").Count()</MudTd>
+        <MudTd>@context.Tasks.Where(x => x.TaskStatus == "Done").Count()</MudTd>
         <MudTd>
-            <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" Color="Color.Success" Size="Size.Small" OnClick="@((e) => OpenProjectBoard(context.ProjectId))"></MudIconButton>
+            <MudProgressLinear Color="Color.Success" Rounded="true" Size="Size.Large" Value="@CalculateTasksProgress(context.Tasks.Where(x => x.TaskStatus == "Done").Count(), context.Tasks.Count())">
+                <MudText Typo="Typo.subtitle1" Color="Color.Dark">
+                    <b>@Math.Round(CalculateTasksProgress(context.Tasks.Where(x => x.TaskStatus == "Done").Count(), context.Tasks.Count()))%</b>
+                </MudText>
+            </MudProgressLinear>
+        </MudTd>
+        <MudTd>
+            @*<MudIconButton Icon="@Icons.Material.Filled.OpenInNew" Color="Color.Success" Size="Size.Small" OnClick="@((e) => OpenProjectBoard(context.ProjectId))"></MudIconButton>*@
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Warning" Size="Size.Small"></MudIconButton>
         </MudTd>
     </RowTemplate>
+    <PagerContent>
+        <MudTablePager HorizontalAlignment="HorizontalAlignment.Center" />
+    </PagerContent>
 </MudTable>
 
 @code {
     List<Project> projects = new List<Project>();
+    private Project selectedItem1 = null;
+    private string searchString1 = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -45,6 +64,55 @@
     private async Task OpenProjectBoard(Guid projectId)
     {
         NavigationManager.NavigateTo($"project/{projectId}/board");
+    }
+
+    private double CalculateTasksProgress(int todo, int allTasks)
+    {
+        var result = 0.0;
+        if (allTasks > 0)
+        {
+            result = ((double)todo / (double)allTasks) * 100.0;
+        }
+        else
+        {
+            result = 0.0;
+        }
+
+        return result;
+    }
+
+    private bool FilterFunc1(Project element) => FilterFunc(element, searchString1);
+
+    private bool FilterFunc(Project element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (element.Number.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (element.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if ($"{element.Number} {element.Name}".Contains(searchString))
+            return true;
+        return false;
+    }
+
+    private void RowClickEvent(TableRowClickEventArgs<Project> tableRowClickEventArgs)
+    {
+        NavigationManager.NavigateTo($"project/{tableRowClickEventArgs.Item.ProjectId}/board");
+    }
+
+    async Task CreateNewProjectDialogOpen()
+    {
+        //var parameters = new DialogParameters { ["project"] = project };
+        var options = new DialogOptions { FullWidth = true, Position = DialogPosition.TopCenter };
+
+        var dialog = DialogService.Show<ProjectCreateDialog>("New Project", options);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            projects = (await ProjectService.GetAllProjects()).Data;
+        }
     }
 
 }

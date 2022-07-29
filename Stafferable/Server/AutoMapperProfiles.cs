@@ -7,6 +7,7 @@ namespace Stafferable.Server
         public AutoMapperProfiles()
         {
             CreateMap<User, UserGet>();
+            CreateMap<Project, ProjectPostDTO>();
         }
     }
 }

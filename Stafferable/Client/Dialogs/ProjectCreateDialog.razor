@@ -1,0 +1,61 @@
+﻿@inject IProjectServiceClient ProjectService
+@inject IToaster Toaster
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Add" Class="mb-1" />
+            New Project
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm>
+            <MudTextField T="int?" Label="Number" Required="true" Variant="Variant.Filled" @bind-Value="project.Number" Mask="@(new PatternMask("00000"))" />
+            <MudTextField T="string" Label="Name" Required="true" Variant="Variant.Filled" @bind-Value="project.Name" />
+            <MudSelect Dense="true" T="string" Label="Status" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter" @bind-Value="project.Status">
+                @foreach (var status in statuses)
+                {
+                    <MudSelectItem T="string" Value="@status">@status</MudSelectItem>
+                }
+            </MudSelect>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudSpacer />
+        <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="Submit">Add</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    public ProjectPostDTO project { get; set; } = new ProjectPostDTO();
+
+    private int[] felines =
+    {
+        8,9,10,11
+    };
+
+    private string[] statuses =
+    {
+        "New", "Active", "Cancelled", "On Hold", "Done"
+    };
+
+    void Cancel() => MudDialog.Cancel();
+
+    private async Task Submit()
+    {
+        var result = await ProjectService.PostProject(project);
+        if (result.Success == true)
+        {
+            Toaster.Success(result.Message);
+        }
+        else
+        {
+            Toaster.Error(result.Message);
+        }
+        ;
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+}

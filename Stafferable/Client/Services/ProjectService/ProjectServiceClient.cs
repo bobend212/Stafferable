@@ -23,7 +23,7 @@ namespace Stafferable.Client.Services.ProjectService
             return result;
         }
 
-        public async Task<ServiceResponse<Project>> PostProject(Project request)
+        public async Task<ServiceResponse<Project>> PostProject(ProjectPostDTO request)
         {
             var result = await _http.PostAsJsonAsync("api/Project/post-project", request);
             return await result.Content.ReadFromJsonAsync<ServiceResponse<Project>>();

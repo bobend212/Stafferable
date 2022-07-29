@@ -2,8 +2,8 @@
 @inject IDialogService DialogService
 @inject IToaster Toaster
 
-<div class="m-2">
-    <MudFab Color="Color.Tertiary" StartIcon="@Icons.Outlined.Add" Label="Add Task" OnClick="@((e) => OpenCrateUpdateTaskDialog())" />
+<div class="mb-2">
+    <MudFab Color="Color.Tertiary" StartIcon="@Icons.Outlined.Add" Label="Add Task" Size="Size.Medium" OnClick="@((e) => OpenCrateUpdateTaskDialog())" />
 </div>
 
 @if (tasks == null)

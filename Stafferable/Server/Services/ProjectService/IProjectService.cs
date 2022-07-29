@@ -6,7 +6,7 @@
 
         Task<ServiceResponse<Project>> GetSingleProject(Guid projectId);
 
-        Task<ServiceResponse<Project>> PostProject(Project model);
+        Task<ServiceResponse<Project>> PostProject(ProjectPostDTO model);
 
         Task<ServiceResponse<bool>> DeleteProject(Guid projectId);
 

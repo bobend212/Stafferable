@@ -8,10 +8,12 @@ namespace Stafferable.Server.Controllers
     public class ProjectController : ControllerBase
     {
         private readonly IProjectService _projectService;
+        private readonly IMapper _mapper;
 
-        public ProjectController(IProjectService projectService)
+        public ProjectController(IProjectService projectService, IMapper mapper)
         {
             _projectService = projectService;
+            _mapper = mapper;
         }
 
         [HttpGet("list")]
@@ -29,16 +31,9 @@ namespace Stafferable.Server.Controllers
         }
 
         [HttpPost("post-project")]
-        public async Task<ActionResult<ServiceResponse<Project>>> PostProject(Project request)
+        public async Task<ActionResult<ServiceResponse<Project>>> PostProject(ProjectPostDTO request)
         {
-            var newProject = new Project
-            {
-                Number = request.Number,
-                Name = request.Name,
-                Status = request.Status
-            };
-
-            var response = await _projectService.PostProject(newProject);
+            var response = await _projectService.PostProject(request);
 
             if (!response.Success)
             {
