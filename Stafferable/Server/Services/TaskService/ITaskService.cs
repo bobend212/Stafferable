@@ -7,5 +7,7 @@
         Task<ServiceResponse<TaskItem>> PostTask(TaskItem model);
 
         Task<ServiceResponse<bool>> CompleteTask(TaskCompleteDTO model);
+
+        Task<ServiceResponse<bool>> UpdateTask(TaskItem model);
     }
 }

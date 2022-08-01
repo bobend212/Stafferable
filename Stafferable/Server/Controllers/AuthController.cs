@@ -12,10 +12,12 @@ namespace Stafferable.Server.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly IMapper _mapper;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IMapper mapper)
         {
             _authService = authService;
+            _mapper = mapper;
         }
 
         [HttpPost("register")]
@@ -91,6 +93,13 @@ namespace Stafferable.Server.Controllers
                 return BadRequest();
             }
 
+            return Ok(response);
+        }
+
+        [HttpGet("users")]
+        public async Task<ActionResult<ServiceResponse<List<User>>>> GetAllUsers()
+        {
+            var response = await _authService.GetAllUsers();
             return Ok(response);
         }
     }

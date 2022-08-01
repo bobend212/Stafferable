@@ -1,5 +1,4 @@
-﻿using Stafferable.Shared;
-using Stafferable.Shared.Auth;
+﻿using Stafferable.Shared.Auth;
 
 namespace Stafferable.Client.Services.Auth
 {
@@ -14,5 +13,7 @@ namespace Stafferable.Client.Services.Auth
         Task<ServiceResponse<bool>> ChangeProfile(UserChangeProfile request);
 
         Task<ServiceResponse<User>> GetSingleUser();
+
+        Task<ServiceResponse<List<UserGet>>> GetAllUsers();
     }
 }

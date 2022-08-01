@@ -117,22 +117,6 @@ namespace Stafferable.Server.Services.Auth
             return new ServiceResponse<bool> { Data = true, Message = "User Profile has been changed." };
         }
 
-        public async Task<ServiceResponse<UserGet>> GetSingleUser(int userId)
-        {
-            var user = await _context.Users.FindAsync(userId);
-            if (user == null)
-            {
-                return new ServiceResponse<UserGet>
-                {
-                    Success = false,
-                    Message = "User not found."
-                };
-            }
-            var userDto = _mapper.Map<UserGet>(user);
-
-            return new ServiceResponse<UserGet> { Data = userDto, Message = "User Found." };
-        }
-
         private string CreateToken(User user)
         {
             List<Claim> claims = new List<Claim>
@@ -175,6 +159,29 @@ namespace Stafferable.Server.Services.Auth
                 passwordHash = hmac
                     .ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
+        }
+
+        public async Task<ServiceResponse<UserGet>> GetSingleUser(int userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return new ServiceResponse<UserGet>
+                {
+                    Success = false,
+                    Message = "User not found."
+                };
+            }
+            var userDto = _mapper.Map<UserGet>(user);
+
+            return new ServiceResponse<UserGet> { Data = userDto, Message = "User Found." };
+        }
+
+        public async Task<ServiceResponse<List<UserGet>>> GetAllUsers()
+        {
+            var users = await _context.Users.ToListAsync();
+            var usersDto = _mapper.Map<List<UserGet>>(users);
+            return new ServiceResponse<List<UserGet>> { Data = usersDto, Message = "Users Found." };
         }
     }
 }

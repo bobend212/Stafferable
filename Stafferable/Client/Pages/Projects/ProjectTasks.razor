@@ -30,6 +30,7 @@ else
             <MudTh Style="font-weight: bold; text-align: center">Deadline</MudTh>
             <MudTh Style="font-weight: bold; text-align: center">Complete Date</MudTh>
             <MudTh Style="font-weight: bold; text-align: center">Priority</MudTh>
+            <MudTh Style="font-weight: bold; text-align: center"></MudTh>
         </HeaderContent>
         <GroupHeaderTemplate>
             <MudTh Style="text-align: left" colspan="9">
@@ -48,12 +49,15 @@ else
                     }
             </div>
         </MudTd>
-        <MudTd Style="text-align: center; border-left: 1px solid black">@context.Title</MudTd>
+        <MudTd Style="text-align: center">@context.Title</MudTd>
         <MudTd Style="text-align: center">@context.Description</MudTd>
         <MudTd Style="text-align: center">@context.AssignedTo?.FName @context.AssignedTo?.LName</MudTd>
         <MudTd Style="text-align: center">@context.DeadlineDate?.ToString("d MMMM yyyy")</MudTd>
         <MudTd Style="text-align: center">@context.CompleteDate?.ToString("d MMMM yyyy")</MudTd>
         <MudTd Style="text-align: center">@context.Priority</MudTd>
+        <MudTd Style="text-align: center">
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Warning" Size="Size.Small" OnClick="@((e) => OpenCrateUpdateTaskDialog2(@context))"></MudIconButton>
+        </MudTd>
     </RowTemplate>
 </MudTable>
 }
@@ -82,6 +86,20 @@ else
         var options = new DialogOptions { FullWidth = true, Position = DialogPosition.TopCenter };
 
         var dialog = DialogService.Show<TaskCreateOrUpdateDialog>("New Task", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            tasks = (await TaskService.GetAllTasksByProjectId(Project.ProjectId)).Data;
+        }
+    }
+
+    async Task OpenCrateUpdateTaskDialog2(TaskItem task)
+    {
+        var parameters = new DialogParameters { ["project"] = Project, ["task"] = task };
+        var options = new DialogOptions { FullWidth = true, Position = DialogPosition.TopCenter };
+
+        var dialog = DialogService.Show<TaskCreateOrUpdateDialog>("Edit Task", parameters, options);
         var result = await dialog.Result;
 
         if (!result.Cancelled)

@@ -2,6 +2,7 @@
 {
     public class UserGet
     {
+        public int UserId { get; set; }
         public string Email { get; set; } = string.Empty;
         public DateTime DateCreated { get; set; } = DateTime.Now;
         public DateTime? DateEdited { get; set; }

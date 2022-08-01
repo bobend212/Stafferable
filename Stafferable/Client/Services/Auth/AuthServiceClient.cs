@@ -41,5 +41,11 @@ namespace Stafferable.Client.Services.Auth
             var result = await _http.GetFromJsonAsync<ServiceResponse<User>>($"/api/Auth/single-user");
             return result;
         }
+
+        public async Task<ServiceResponse<List<UserGet>>> GetAllUsers()
+        {
+            var result = await _http.GetFromJsonAsync<ServiceResponse<List<UserGet>>>($"/api/Auth/users");
+            return result;
+        }
     }
 }

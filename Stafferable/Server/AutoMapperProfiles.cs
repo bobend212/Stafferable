@@ -8,6 +8,7 @@ namespace Stafferable.Server
         {
             CreateMap<User, UserGet>();
             CreateMap<Project, ProjectPostDTO>();
+            CreateMap<TaskItemUpdateDTO, TaskItem>();
         }
     }
 }

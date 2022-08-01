@@ -66,5 +66,31 @@
 
             return new ServiceResponse<bool> { Message = "Task Completed", Data = true };
         }
+
+        public async Task<ServiceResponse<bool>> UpdateTask(TaskItem model)
+        {
+            var findTask = await _context.Tasks.FindAsync(model.TaskItemId);
+            if (findTask == null)
+            {
+                return new ServiceResponse<bool>()
+                {
+                    Success = false,
+                    Message = "Task not found."
+                };
+            }
+
+            findTask.Title = model.Title;
+            findTask.Description = model.Description;
+            findTask.AssignedToId = model.AssignedToId;
+            findTask.EditorId = model.EditorId;
+            findTask.ProjectId = model.ProjectId;
+            findTask.DeadlineDate = model.DeadlineDate;
+            findTask.Priority = model.Priority;
+            findTask.DateEdited = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+
+            return new ServiceResponse<bool> { Message = "Task Updated!", Data = true };
+        }
     }
 }

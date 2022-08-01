@@ -9,5 +9,7 @@ namespace Stafferable.Client.Services.TaskService
         Task<ServiceResponse<TaskItem>> PostTask(TaskItem request);
 
         Task CompleteTask(TaskItem request);
+
+        Task UpdateTask(TaskItem request);
     }
 }

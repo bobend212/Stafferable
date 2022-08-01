@@ -9,10 +9,12 @@ namespace Stafferable.Server.Controllers
     public class TasksController : ControllerBase
     {
         private readonly ITaskService _taskService;
+        private readonly IMapper _mapper;
 
-        public TasksController(ITaskService taskService)
+        public TasksController(ITaskService taskService, IMapper mapper)
         {
             _taskService = taskService;
+            _mapper = mapper;
         }
 
         [HttpGet("{projectId}/tasks")]
@@ -56,6 +58,15 @@ namespace Stafferable.Server.Controllers
             var loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             request.EditorId = int.Parse(loggedUserId);
             var result = await _taskService.CompleteTask(request);
+            return Ok(result);
+        }
+
+        [HttpPut("task-update")]
+        public async Task<ActionResult<ServiceResponse<bool>>> UpdateTask([FromBody] TaskItemUpdateDTO request)
+        {
+            var loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            request.EditorId = int.Parse(loggedUserId);
+            var result = await _taskService.UpdateTask(_mapper.Map<TaskItem>(request));
             return Ok(result);
         }
     }

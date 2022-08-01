@@ -1,11 +1,12 @@
 ﻿@inject ITaskServiceClient TaskService
+@inject IAuthServiceClient AuthService
 @inject IToaster Toaster
 
 <MudDialog>
     <TitleContent>
         <MudText Typo="Typo.h6">
             <MudIcon Icon="@Icons.Material.Filled.Task" Class="mb-1" />
-            New Task - @project.Number @project.Name
+            @titleText - @project.Number @project.Name
         </MudText>
     </TitleContent>
     <DialogContent>
@@ -13,9 +14,9 @@
             <MudTextField T="string" Label="Title" Required="true" Variant="Variant.Filled" @bind-Value="task.Title" />
             <MudTextField T="string" Label="Description" Lines="4" Required="true" Variant="Variant.Filled" @bind-Value="task.Description" />
             <MudSelect Dense="true" T="int?" Label="Assigned To?" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter" @bind-Value="task.AssignedToId">
-                @foreach (var feline in felines)
+                @foreach (var user in users)
                 {
-                    <MudSelectItem T="int?" Value="@feline">@feline</MudSelectItem>
+                    <MudSelectItem T=int? Value="@user.UserId">@(user.FName) @(user.LName)</MudSelectItem>
                 }
             </MudSelect>
             <MudDatePicker Culture="@CultureInfo.GetCultureInfo("pl-pl")" Label="Deadline" Variant="Variant.Filled" DisableToolbar="true" @bind-Date="task.DeadlineDate" />
@@ -30,41 +31,69 @@
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
         <MudSpacer />
-        <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="Submit">Add</MudButton>
+        <MudButton Color="@btnColor" Variant="Variant.Filled" OnClick="Submit">@btnText</MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
-
     [Parameter] public TaskItem task { get; set; } = new TaskItem();
     [Parameter] public Project project { get; set; } = new Project();
+    string titleText = "";
+    string btnText = "";
+    Color btnColor = Color.Success;
+    List<UserGet> users = new List<UserGet>();
 
     private int[] felines =
-    {
+                {
         8,9,10,11
     };
 
     private string[] priorityLevels =
-    {
+                {
         "Low", "Medium", "High"
     };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        users = (await AuthService.GetAllUsers()).Data;
+        if (task.TaskItemId == Guid.Empty)
+        {
+            titleText = "New Task";
+            btnText = "Add";
+        }
+        else
+        {
+            titleText = "Update Task Details";
+            btnColor = Color.Warning;
+            btnText = "Update";
+        }
+    }
 
     void Cancel() => MudDialog.Cancel();
 
     private async Task Submit()
     {
-        task.ProjectId = project.ProjectId;
-        var result = await TaskService.PostTask(task);
-        if (result.Success == true)
+        if (task.TaskItemId == Guid.Empty)
         {
-            Toaster.Success(result.Message);
+            task.ProjectId = project.ProjectId;
+            var result = await TaskService.PostTask(task);
+            if (result.Success == true)
+            {
+                Toaster.Success(result.Message);
+            }
+            else
+            {
+                Toaster.Error(result.Message);
+            }
+            MudDialog.Close(DialogResult.Ok(true));
         }
         else
         {
-            Toaster.Error(result.Message);
+            task.ProjectId = project.ProjectId;
+            await TaskService.UpdateTask(task);
+            Toaster.Success("Task Updated!");
+            MudDialog.Close(DialogResult.Ok(true));
         }
-        ;
-        MudDialog.Close(DialogResult.Ok(true));
     }
 }
