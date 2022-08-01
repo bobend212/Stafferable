@@ -9,5 +9,7 @@
         Task<ServiceResponse<bool>> CompleteTask(TaskCompleteDTO model);
 
         Task<ServiceResponse<bool>> UpdateTask(TaskItem model);
+
+        Task<ServiceResponse<bool>> DeleteTask(Guid taskId);
     }
 }

@@ -1,6 +1,10 @@
 ﻿@inject ITaskServiceClient TaskService
 @inject IAuthServiceClient AuthService
 @inject IToaster Toaster
+@inject IDialogService DialogService
+@inject ILocalStorageService LocalStorage
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using System.Security.Claims
 
 <MudDialog>
     <TitleContent>
@@ -13,12 +17,16 @@
         <MudForm>
             <MudTextField T="string" Label="Title" Required="true" Variant="Variant.Filled" @bind-Value="task.Title" />
             <MudTextField T="string" Label="Description" Lines="4" Required="true" Variant="Variant.Filled" @bind-Value="task.Description" />
-            <MudSelect Dense="true" T="int?" Label="Assigned To?" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter" @bind-Value="task.AssignedToId">
+              <MudSelect  Immediate="true" Dense="true" T="int?" Label="Assigned To?" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter" @bind-Value="task.AssignedToId">
                 @foreach (var user in users)
                 {
-                    <MudSelectItem T=int? Value="@user.UserId">@(user.FName) @(user.LName)</MudSelectItem>
+                <MudSelectItem T=int? Value="@user.UserId">@(user.FName) @(user.LName)</MudSelectItem>
                 }
-            </MudSelect>
+                </MudSelect>
+
+@*            <MudAutocomplete T="int?" Label="Assigned to?" @bind-Value="value1" SearchFunc="@Search1" 
+                Dense="true" Variant="Variant.Filled" />*@
+
             <MudDatePicker Culture="@CultureInfo.GetCultureInfo("pl-pl")" Label="Deadline" Variant="Variant.Filled" DisableToolbar="true" @bind-Date="task.DeadlineDate" />
             <MudSelect Dense="true" T="string" Label="Priority" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter" @bind-Value="task.Priority">
                 @foreach (var level in priorityLevels)
@@ -30,6 +38,12 @@
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
+        <AuthorizeView>
+            @if (task.TaskItemId != Guid.Empty && @context.User.FindFirst(ClaimTypes.Role).Value == "Admin")
+            {
+                <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="OpenDeleteTaskDialog">Delete</MudButton>
+            }
+        </AuthorizeView>
         <MudSpacer />
         <MudButton Color="@btnColor" Variant="Variant.Filled" OnClick="Submit">@btnText</MudButton>
     </DialogActions>
@@ -39,18 +53,13 @@
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Parameter] public TaskItem task { get; set; } = new TaskItem();
     [Parameter] public Project project { get; set; } = new Project();
-    string titleText = "";
+    string titleText = "New Task";
     string btnText = "";
     Color btnColor = Color.Success;
     List<UserGet> users = new List<UserGet>();
 
-    private int[] felines =
-                {
-        8,9,10,11
-    };
-
     private string[] priorityLevels =
-                {
+                                    {
         "Low", "Medium", "High"
     };
 
@@ -96,4 +105,37 @@
             MudDialog.Close(DialogResult.Ok(true));
         }
     }
+
+    async Task OpenDeleteTaskDialog()
+    {
+        var parameters = new DialogParameters { ["taskItem"] = task };
+        var options = new DialogOptions { FullWidth = true };
+        var dialog = DialogService.Show<TaskDeleteDialog>("Delete Task", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            MudDialog.Close(DialogResult.Ok(true));
+            Toaster.Success("Task Deleted");
+        }
+    }
+
+    private int? value1;
+    private UserGet userGet;
+
+    private async Task<IEnumerable<int?>> Search1(string value)
+    {
+        var users = (await AuthService.GetAllUsers()).Data;
+        //var xx = users.Select(x => string.Join(", ", $"{x.FName} {x.LName}")).Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+         var xx = users.Select(x => (int?)x.UserId).ToList();
+        if (string.IsNullOrEmpty(value))
+            return xx;
+        return xx;
+        // return users.Select(x => x.UserId);
+        //return Task.FromResult(users.Select(x => string.Join(", ", $"{x.FName} {x.LName}")).Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase)));
+        // return users.Where(x => x.FName.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+
+    }
+
+
 }

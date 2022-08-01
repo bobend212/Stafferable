@@ -11,5 +11,7 @@ namespace Stafferable.Client.Services.TaskService
         Task CompleteTask(TaskItem request);
 
         Task UpdateTask(TaskItem request);
+
+        Task DeleteTask(Guid taskId);
     }
 }

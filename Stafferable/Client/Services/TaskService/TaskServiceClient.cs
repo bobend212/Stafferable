@@ -32,5 +32,10 @@ namespace Stafferable.Client.Services.TaskService
         {
             var result = await _http.PutAsJsonAsync("api/Tasks/task-update", request);
         }
+
+        public async Task DeleteTask(Guid taskId)
+        {
+            var result = await _http.DeleteAsync($"/api/Tasks/{taskId}");
+        }
     }
 }

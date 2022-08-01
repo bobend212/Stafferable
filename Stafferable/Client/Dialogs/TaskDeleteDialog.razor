@@ -1,0 +1,24 @@
+﻿@inject ITaskServiceClient TaskService
+
+<MudDialog>
+    <DialogContent>
+        <MudText>Do you really want to delete this Task?</MudText>
+        <MudText>This process cannot be undone.</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="Delete">Delete</MudButton>
+    </DialogActions>
+</MudDialog>
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public TaskItem taskItem { get; set; } = new TaskItem();
+
+    void Cancel() => MudDialog.Cancel();
+
+    async Task Delete()
+    {
+        await TaskService.DeleteTask(taskItem.TaskItemId);
+        MudDialog.Close(DialogResult.Ok(taskItem));
+    }
+}

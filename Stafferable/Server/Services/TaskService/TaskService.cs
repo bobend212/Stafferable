@@ -92,5 +92,24 @@
 
             return new ServiceResponse<bool> { Message = "Task Updated!", Data = true };
         }
+
+        public async Task<ServiceResponse<bool>> DeleteTask(Guid taskId)
+        {
+            var findTask = await _context.Tasks.FindAsync(taskId);
+            if (findTask == null)
+            {
+                return new ServiceResponse<bool>()
+                {
+                    Success = false,
+                    Data = false,
+                    Message = "Task not found."
+                };
+            }
+
+            _context.Tasks.Remove(findTask);
+            await _context.SaveChangesAsync();
+
+            return new ServiceResponse<bool> { Message = "Task Deleted", Data = true };
+        }
     }
 }

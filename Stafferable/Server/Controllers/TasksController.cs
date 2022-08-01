@@ -69,5 +69,12 @@ namespace Stafferable.Server.Controllers
             var result = await _taskService.UpdateTask(_mapper.Map<TaskItem>(request));
             return Ok(result);
         }
+
+        [HttpDelete("{taskId}")]
+        public async Task<ActionResult<ServiceResponse<bool>>> DeleteTask(Guid taskId)
+        {
+            var response = await _taskService.DeleteTask(taskId);
+            return Ok(response);
+        }
     }
 }
