@@ -1,113 +1,154 @@
-﻿<MudGrid Justify="Justify.Center">
-
-    <MudItem xs="12" sm="3">
-        <MudPaper Class="pa-3" Elevation="5">
-            <MudText Typo="Typo.h6">Slab Stage</MudText>
-            <MudText Typo="Typo.body1"><b>Completed</b></MudText>
-        </MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="3">
-        <MudPaper Class="pa-3" Elevation="5">
-            <MudText Typo="Typo.h6">B'Regs' Stage</MudText>
-            <MudText Typo="Typo.body1"><b>In Progress</b></MudText>
-        </MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="3">
-        <MudPaper Class="pa-3" Elevation="5">
-            <MudText Typo="Typo.h6">Production Stage</MudText>
-            <MudText Typo="Typo.body1"><b>Not Started</b></MudText>
-        </MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="3">
-        <MudPaper Class="pa-1 text-center" Elevation="5">
-            <div class="row">
-                <div class="col">
-                    <MudText Typo="Typo.body2" Align="Align.Center">Drawings Received?</MudText>
-                    <MudCheckBox @bind-Checked="@TestCheck1" Dense="false" Color="Color.Primary" Disabled="true"></MudCheckBox>
-                </div>
-                <div class="col">
-                    <MudText Typo="Typo.body2" Align="Align.Center">Engineering Received?</MudText>
-                    <MudCheckBox @bind-Checked="@TestCheck2" Dense="false" Color="Color.Primary" Disabled="true"></MudCheckBox>
+﻿<div>
+    <div class="row m-2">
+        <div class="col-sm-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Slab Stage</h5>
+                    <div>COMPLETED</div>
                 </div>
             </div>
-        </MudPaper>
-    </MudItem>
-
-    <MudItem xs="12" sm="4">
-        <MudPaper Class="pa-4">
-            <MudText Typo="Typo.h6">Order Placed: <b>July 26, 2022</b></MudText>
-        </MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="4">
-        <MudPaper Class="pa-4">
-            <MudText Typo="Typo.h6">Delivery Date: <b>July 26, 2022</b></MudText>
-        </MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="2">
-        <MudPaper Class="pa-4">
-            <MudText Typo="Typo.h6" Align="Align.Center"><u>Design Info</u></MudText>
-        </MudPaper>
-    </MudItem>
-    <MudItem xs="12" sm="2">
-        <MudPaper Class="pa-4">
-            <MudText Typo="Typo.h6" Align="Align.Center"><u>Planner</u></MudText>
-        </MudPaper>
-    </MudItem>
-
-    <MudItem xs="12" sm="12">
-        <MudPaper Class="pa-4" style="margin-bottom: 2px" Elevation="4">
-            <div class="row">
-                <div class="col">
-                    <MudText Typo="Typo.h6">Slab, Setting Outs</MudText>
-                    <div class="d-flex">
-                        <ul>
-                            <li><MudText Typo="Typo.button" Class="mr-2">Required: <b>July 26, 2022</b></MudText></li>
-                            <li><MudText Typo="Typo.button" Class="mr-2">Estimated: <b>July 26, 2022</b></MudText></li>
-                            <li><MudText Typo="Typo.button" Class="mr-2">Issued: <b>July 26, 2022</b></MudText></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col">
-                    <MudText Typo="Typo.h6">Building Reg's</MudText>
-                    <div class="d-flex">
-                        <ul>
-                            <li><MudText Typo="Typo.button" Class="mr-2">Required: <b>July 26, 2022</b></MudText></li>
-                            <li><MudText Typo="Typo.button" Class="mr-2">Estimated: <b>July 26, 2022</b></MudText></li>
-                            <li><MudText Typo="Typo.button" Class="mr-2">Issued: <b>July 26, 2022</b></MudText></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col">
-                    <MudText Typo="Typo.h6">Full Set</MudText>
-                    <div class="d-flex">
-                        <ul>
-                            <li><MudText Typo="Typo.button" Class="mr-2">Required: <b>July 26, 2022</b></MudText></li>
-                            <li><MudText Typo="Typo.button" Class="mr-2">Estimated: <b>July 26, 2022</b></MudText></li>
-                            <li><MudText Typo="Typo.button" Class="mr-2">Issued: <b>July 26, 2022</b></MudText></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col">
-                    <MudText Typo="Typo.h6">Issuing</MudText>
-                    <div class="d-flex">
-                        <ul>
-                            <li><MudText Typo="Typo.button" Class="mr-2">Required: <b>July 26, 2022</b></MudText></li>
-                            <li><MudText Typo="Typo.button" Class="mr-2">Estimated: <b>July 26, 2022</b></MudText></li>
-                            <li><MudText Typo="Typo.button" Class="mr-2">Issued: <b>July 26, 2022</b></MudText></li>
-                        </ul>
-                    </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">B'Regs Stage</h5>
+                    <div>IN PROGRESS</div>
                 </div>
             </div>
-        </MudPaper>
-        <MudPaper Class=" mt-4">
-            <MudTextField T="string" Label="Comments" Variant="Variant.Filled" Text="@sampleText" Lines="3" />
-        </MudPaper>
-        <MudPaper Class="pa-4 mt-4">
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true">Update</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Secondary" DisableElevation="true" Class="mx-2">Delete</MudButton>
-        </MudPaper>
-    </MudItem>
-</MudGrid>
+        </div>
+        <div class="col-sm-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Production Stage</h5>
+                    <div>DONE</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Order Placed</h5>
+                    <div>September 23, 2021</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Delivery Date</h5>
+                    <div>April 11, 2022</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <div class="row m-2">
+        <div class="col-sm-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Design Info</h5>
+                    <div>Link</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Planner</h5>
+                    <div>Link</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Drawings Received?</h5>
+                    <div>YES</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Eng. Received?</h5>
+                    <div>YES</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <div class="row m-2">
+        <div class="col-sm-10">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Comments</h5>
+                    <div>@sampleText</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <div class="row m-2">
+        <div class="col-sm-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Slab, Setting Outs</h5>
+                    <div>Required: July 24, 2022</div>
+                    <div>Estimated: July 24, 2022</div>
+                    <div>Issued: July 24, 2022</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Building Reg's</h5>
+                    <div>Required: July 24, 2022</div>
+                    <div>Estimated: July 24, 2022</div>
+                    <div>Issued: July 24, 2022</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Full Set</h5>
+                    <div>Required: July 24, 2022</div>
+                    <div>Estimated: July 24, 2022</div>
+                    <div>Issued: July 24, 2022</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Issuing</h5>
+                    <div>Required: July 24, 2022</div>
+                    <div>Estimated: July 24, 2022</div>
+                    <div>Issued: July 24, 2022</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr />
+    <div class="row m-2">
+        <div class="col-sm-3">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-text"><small class="text-muted">Last updated: July 26, 2022</small></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="card text-right">
+                <div class="card-body">
+                    <p class="card-text"><small class="text-muted">Date added: April 11, 2022</small></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @code {
     [Parameter]
