@@ -8,24 +8,25 @@
 
 <MudDialog>
     <TitleContent>
-        <MudText Typo="Typo.h6">
+        <MudText Typo="Typo.h6" Align="Align.Center">
             <MudIcon Icon="@Icons.Material.Filled.Task" Class="mb-1" />
-            @titleText - @project.Number @project.Name
+            @project.Number @project.Name
         </MudText>
     </TitleContent>
     <DialogContent>
+        <MudText Typo="Typo.subtitle1" Align="Align.Center">@titleText</MudText>
         <MudForm>
             <MudTextField T="string" Label="Title" Required="true" Variant="Variant.Filled" @bind-Value="task.Title" />
             <MudTextField T="string" Label="Description" Lines="4" Required="true" Variant="Variant.Filled" @bind-Value="task.Description" />
-              <MudSelect  Immediate="true" Dense="true" T="int?" Label="Assigned To?" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter" @bind-Value="task.AssignedToId">
-                @foreach (var user in users)
-                {
-                <MudSelectItem T=int? Value="@user.UserId">@(user.FName) @(user.LName)</MudSelectItem>
-                }
-                </MudSelect>
-
-@*            <MudAutocomplete T="int?" Label="Assigned to?" @bind-Value="value1" SearchFunc="@Search1" 
-                Dense="true" Variant="Variant.Filled" />*@
+            <MudAutocomplete T="int?" Label="Assigned to?" @bind-Value="task.AssignedToId" SearchFunc="@SearchFunc"
+                             Dense="true" Variant="Variant.Filled" Clearable="true" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Default"
+                             ToStringFunc="@(userId => DisplayUser(userId))">
+                <NoItemsTemplate>
+                    <MudText Align="Align.Center" Class="px-4 py-1">
+                        No users found
+                    </MudText>
+                </NoItemsTemplate>
+            </MudAutocomplete>
 
             <MudDatePicker Culture="@CultureInfo.GetCultureInfo("pl-pl")" Label="Deadline" Variant="Variant.Filled" DisableToolbar="true" @bind-Date="task.DeadlineDate" />
             <MudSelect Dense="true" T="string" Label="Priority" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter" @bind-Value="task.Priority">
@@ -53,13 +54,14 @@
     [CascadingParameter] MudDialogInstance MudDialog { get; set; }
     [Parameter] public TaskItem task { get; set; } = new TaskItem();
     [Parameter] public Project project { get; set; } = new Project();
-    string titleText = "New Task";
+
+    string titleText = "";
     string btnText = "";
     Color btnColor = Color.Success;
     List<UserGet> users = new List<UserGet>();
 
     private string[] priorityLevels =
-                                    {
+        {
         "Low", "Medium", "High"
     };
 
@@ -109,7 +111,7 @@
     async Task OpenDeleteTaskDialog()
     {
         var parameters = new DialogParameters { ["taskItem"] = task };
-        var options = new DialogOptions { FullWidth = true };
+        var options = new DialogOptions { FullWidth = true, Position = DialogPosition.BottomCenter };
         var dialog = DialogService.Show<TaskDeleteDialog>("Delete Task", parameters, options);
         var result = await dialog.Result;
 
@@ -120,22 +122,18 @@
         }
     }
 
-    private int? value1;
-    private UserGet userGet;
-
-    private async Task<IEnumerable<int?>> Search1(string value)
+    private async Task<IEnumerable<int?>> SearchFunc(string inputValue)
     {
-        var users = (await AuthService.GetAllUsers()).Data;
-        //var xx = users.Select(x => string.Join(", ", $"{x.FName} {x.LName}")).Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
-         var xx = users.Select(x => (int?)x.UserId).ToList();
-        if (string.IsNullOrEmpty(value))
-            return xx;
-        return xx;
-        // return users.Select(x => x.UserId);
-        //return Task.FromResult(users.Select(x => string.Join(", ", $"{x.FName} {x.LName}")).Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase)));
-        // return users.Where(x => x.FName.Contains(value, StringComparison.InvariantCultureIgnoreCase));
-
+        if (string.IsNullOrEmpty(inputValue))
+            return users.Select(x => (int?)x.UserId);
+        return users.Where(x => x.FName.Contains(inputValue, StringComparison.InvariantCultureIgnoreCase) || 
+            x.LName.Contains(inputValue, StringComparison.InvariantCultureIgnoreCase)).Select(x => (int?)x.UserId);
     }
 
+    private string DisplayUser(int? assignedUserId)
+    {
+        var user = users.FirstOrDefault(i => i.UserId == assignedUserId);
+        return string.Join(", ", $"{user.FName} {user.LName}");
+    }
 
 }
