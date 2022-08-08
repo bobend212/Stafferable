@@ -9,7 +9,7 @@
     <MudTable Items="@projects" Hover="true" Dense="true" CustomHeader="true" Bordered="true" Breakpoint="Breakpoint.Sm" Elevation="4" OnRowClick="RowClickEvent" T="Project"
               HeaderClass="table-head-bordered" Filter="new Func<Project,bool>(FilterFunc1)" @bind-SelectedItem="selectedItem1">
         <ToolBarContent>
-            <MudFab Color="Color.Tertiary" StartIcon="@Icons.Outlined.Add" Label="New Project" Size="Size.Medium" OnClick="@((e) => CreateNewProjectDialogOpen())" />
+            <MudFab Color="Color.Tertiary" StartIcon="@Icons.Outlined.Add" Size="Size.Medium" OnClick="@((e) => CreateNewProjectDialogOpen())" />
             <MudSpacer />
             <MudTextField @bind-Value="searchString1" Placeholder="Search by Number or Name" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
         </ToolBarContent>
@@ -46,6 +46,9 @@
                 <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Warning" Size="Size.Small" OnClick="@((e) => OpenUpdateDialog(@context))"></MudIconButton>
             </MudTd>
         </RowTemplate>
+        <NoRecordsContent>
+            <MudText>No matching records found.</MudText>
+        </NoRecordsContent>
         <PagerContent>
             <MudTablePager HorizontalAlignment="HorizontalAlignment.Center" />
         </PagerContent>
