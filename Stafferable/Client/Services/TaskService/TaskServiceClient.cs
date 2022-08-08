@@ -17,6 +17,12 @@ namespace Stafferable.Client.Services.TaskService
             return result!;
         }
 
+        public async Task<ServiceResponse<List<TaskItemGet>>> GetAllTasksByLoggedUser()
+        {
+            ServiceResponse<List<TaskItemGet>> result = await _http.GetFromJsonAsync<ServiceResponse<List<TaskItemGet>>>($"/api/Tasks/my-tasks");
+            return result!;
+        }
+
         public async Task<ServiceResponse<TaskItem>> PostTask(TaskItem request)
         {
             var result = await _http.PostAsJsonAsync("api/Tasks/post-task", request);

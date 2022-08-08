@@ -1,0 +1,46 @@
+﻿@page "/my-tasks"
+@inject ITaskServiceClient TaskService
+@inject IDialogService DialogService
+@inject IToaster Toaster
+
+<div style="display: flex; align-items: center; justify-content: space-between">
+    <div>
+        <div style="display: inline-block">
+            <MudText Typo="Typo.h4" Class="mb-2">My Tasks</MudText>
+        </div>
+    </div>
+
+    <div style="display: inline-block">
+        <MudFab Color="Color.Dark" StartIcon="@Icons.Outlined.Add" Label="New Task" IconSize="Size.Small" />
+    </div>
+</div>
+
+<MudTable Items="@tasks" Hover="true" Elevation="0" Dense="true" Bordered="true">
+    <HeaderContent>
+        <MudTh Style="font-weight: bold">#</MudTh>
+        <MudTh Style="font-weight: bold">Title</MudTh>
+        <MudTh Style="font-weight: bold">Description</MudTh>
+        <MudTh Style="font-weight: bold">Due Date</MudTh>
+        <MudTh Style="font-weight: bold">Complete Date</MudTh>
+        <MudTh Style="font-weight: bold">Project</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd Style="width: 10px">
+            <MudCheckBox @bind-Checked="@context.IsComplete" Dense="true" UnCheckedColor="Color.Warning" Color="Color.Success" CheckedIcon="@Icons.Material.Filled.CheckCircle" UncheckedIcon="@Icons.Material.Filled.RadioButtonUnchecked"></MudCheckBox>
+        </MudTd>
+        <MudTd>@context.Title</MudTd>
+        <MudTd>@context.Description</MudTd>
+        <MudTd>@context.DeadlineDate?.ToString("dd MMM yyyy")</MudTd>
+        <MudTd>@context.CompleteDate?.ToString("dd MMM yyyy")</MudTd>
+        <MudTd>@context.Project?.Number @context.Project?.Name</MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    List<TaskItemGet> tasks = new List<TaskItemGet>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        tasks = (await TaskService.GetAllTasksByLoggedUser()).Data;
+    }
+}

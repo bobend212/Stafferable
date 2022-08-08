@@ -6,6 +6,8 @@ namespace Stafferable.Client.Services.TaskService
     {
         Task<ServiceResponse<List<TaskItem>>> GetAllTasksByProjectId(Guid projectId);
 
+        Task<ServiceResponse<List<TaskItemGet>>> GetAllTasksByLoggedUser();
+
         Task<ServiceResponse<TaskItem>> PostTask(TaskItem request);
 
         Task CompleteTask(TaskItem request);

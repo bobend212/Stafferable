@@ -24,6 +24,14 @@ namespace Stafferable.Server.Controllers
             return Ok(response);
         }
 
+        [HttpGet("my-tasks")]
+        public async Task<ActionResult<ServiceResponse<List<TaskItemGet>>>> GetAllTasksForLoggedUser()
+        {
+            var loggedUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            ServiceResponse<List<TaskItemGet>> response = await _taskService.GetAllTasksForLoggedUser(int.Parse(loggedUserId));
+            return Ok(response);
+        }
+
         [HttpPost("post-task")]
         public async Task<ActionResult<ServiceResponse<TaskItem>>> PostTask(TaskItemPostDTO request)
         {

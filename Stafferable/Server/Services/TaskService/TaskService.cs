@@ -3,10 +3,12 @@
     public class TaskService : ITaskService
     {
         private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public TaskService(ApplicationDbContext context)
+        public TaskService(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<ServiceResponse<List<TaskItem>>> GetAllTasksByProjectId(Guid projectId)
@@ -29,6 +31,31 @@
             {
                 response.Data = tasks;
                 response.Message = $"Tasks found for Project: {findProject.Number} {findProject.Name}";
+            }
+
+            return response;
+        }
+
+        public async Task<ServiceResponse<List<TaskItemGet>>> GetAllTasksForLoggedUser(int userId)
+        {
+            ServiceResponse<List<TaskItemGet>> response = new ServiceResponse<List<TaskItemGet>>();
+            var loggedUser = await _context.Users.FirstOrDefaultAsync(x => x.UserId == userId);
+            var tasks = await _context.Tasks.Where(u => u.AssignedToId == userId).Include(x => x.Project).ToListAsync();
+
+            if (loggedUser == null)
+            {
+                response.Success = false;
+                response.Message = "User not found.";
+            }
+            else if (tasks.Count < 1)
+            {
+                response.Success = true;
+                response.Message = $"No Tasks for User: {loggedUser.FName} {loggedUser.LName}";
+            }
+            else
+            {
+                response.Data = _mapper.Map<List<TaskItemGet>>(tasks);
+                response.Message = $"Tasks found for User: {loggedUser.FName} {loggedUser.LName}";
             }
 
             return response;
