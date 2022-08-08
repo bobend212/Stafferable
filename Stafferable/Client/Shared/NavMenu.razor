@@ -6,7 +6,7 @@
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href=""><i class="fa fa-2x fa-ravelry"></i> Stafferable</a>
+        <a class="navbar-brand" href=""><MudIcon Icon="@Icons.Material.Filled.LabelImportant" Size="Size.Medium" Class="mb-1" /> Stafferable</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -17,7 +17,7 @@
     <nav class="flex-column">
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span><i class="fa fa-lg fa-home"></i> Home</span>
+                <span><MudIcon Icon="@Icons.Material.Filled.Home" Size="Size.Small" Class="mb-1" /> Home</span>
             </NavLink>
         </div>
         <AuthorizeView>
@@ -25,22 +25,28 @@
 
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="projects">
-                        <span><i class="fa fa-lg fa-briefcase"></i> Projects</span>
+                        <span><MudIcon Icon="@Icons.Material.Filled.Workspaces" Size="Size.Small" Class="mb-1" /> Projects</span>
                     </NavLink>
                 </div>
 
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="timesheet">
-                        <span><i class="fa fa-lg fa-calendar-check-o"></i> Timesheet</span>
+                        <span><MudIcon Icon="@Icons.Material.Filled.AccessTime" Size="Size.Small" Class="mb-1" /> Timesheet</span>
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="timesheet">
+                        <span><MudIcon Icon="@Icons.Material.Filled.Task" Size="Size.Small" Class="mb-1" /> My Tasks</span>
                     </NavLink>
                 </div>
 
                 <hr style="color:white" />
                 @if (@context.User.FindFirst(ClaimTypes.Role).Value == "Admin")
                 {
-                    <div class="nav-item px-3" >
+                    <div class="nav-item px-3">
                         <NavLink class="nav-link" href="admin/timesheet">
-                            <span><i class="fa fa-lg fa-calendar-check-o"></i> Timesheet Admin</span>
+                            <span><MudIcon Icon="@Icons.Material.Filled.AdminPanelSettings" Size="Size.Small" Class="mb-1" /> Timesheet Admin</span>
                         </NavLink>
                     </div>
                     <hr style="color:white" />
@@ -51,14 +57,14 @@
 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="register">
-                <span><i class="fa fa-lg fa-user-plus"></i> Register</span>
+                <span><MudIcon Icon="@Icons.Material.Filled.PersonAdd" Size="Size.Small" Class="mb-1" /> Register</span>
             </NavLink>
         </div>
         <AuthorizeView>
             <NotAuthorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="login">
-                        <span><i class="fa fa-lg fa-sign-in"></i> Login</span>
+                        <span><MudIcon Icon="@Icons.Material.Filled.Login" Size="Size.Small" Class="mb-1" /> Login</span>
                     </NavLink>
                 </div>
             </NotAuthorized>
@@ -67,7 +73,7 @@
             <AuthorizeView>
                 <Authorized>
                     <div class="nav-item px-3">
-                        <button type="button" class="btn btn-light btn-block" style="width:100%" @onclick="Logout"><i class="fa fa-lg fa-sign-out"></i> Logout</button>
+                        <button type="button" class="btn btn-light btn-block" style="width:100%" @onclick="Logout">Logout</button>
                     </div>
                 </Authorized>
             </AuthorizeView>
