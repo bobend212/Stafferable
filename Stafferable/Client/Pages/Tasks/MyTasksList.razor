@@ -5,39 +5,72 @@
 
 <div style="display: flex; align-items: center; justify-content: space-between">
     <div style="display: inline-block">
-        <div>
-            <MudText Typo="Typo.h4" Class="mb-2">My Tasks</MudText>
-        </div>
-        <div>
-            <MudSwitch ThumbIcon="@(ShowCompletedTasks==true ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)" ThumbIconColor="@(ShowCompletedTasks==true ? Color.Success : Color.Error)"
-                       Label="@(ShowCompletedTasks ? "Hide Completed" : "Show Completed")" Checked="@ShowCompletedTasks" CheckedChanged="@((bool value) => OnToggledChanged(value))" />
-        </div>
+        <MudText Typo="Typo.h4" Class="mb-2">My Tasks</MudText>
+
+
     </div>
 
-    <div style="display: inline-block">
-        <MudFab Color="Color.Dark" StartIcon="@Icons.Outlined.Add" Label="New Task" IconSize="Size.Small" OnClick="@((e) => OpenCrateUpdateTaskDialog())" />
+    <div style="display: inline-block; position: sticky">
+        <MudPaper Class="p-1 mr-2" style="display: inline-block">
+            <MudText style="display: inline" Typo="Typo.body1">High <MudIcon Class="mr-1" Icon="@Icons.Material.Filled.Flag" Color="Color.Error" Size="Size.Small" /> </MudText>
+            <MudText style="display: inline" Typo="Typo.body1">Medium <MudIcon Class="mr-1" Icon="@Icons.Material.Filled.Flag" Color="Color.Warning" Size="Size.Small" /> </MudText>
+            <MudText style="display: inline" Typo="Typo.body1">Low <MudIcon Class="mr-1" Icon="@Icons.Material.Filled.Flag" Color="Color.Default" Size="Size.Small" /> </MudText>
+            <MudText style="display: inline" Typo="Typo.body1">Deadline <MudIcon Icon="@Icons.Material.Filled.NotificationImportant" Color="Color.Error" Size="Size.Small" /> </MudText>
+        </MudPaper>
+
+        <MudSwitch Style="width: 200px" ThumbIcon="@(ShowCompletedTasks==true ? Icons.Material.Filled.FilterAlt : Icons.Material.Filled.FilterAltOff)" ThumbIconColor="@(ShowCompletedTasks==true ? Color.Success : Color.Error)"
+                   Label="@(ShowCompletedTasks ? "Hide Completed" : "Show Completed")" Checked="@ShowCompletedTasks" CheckedChanged="@((bool value) => OnToggledChanged(value))" />
+
+        <MudFab Color="Color.Dark" StartIcon="@Icons.Outlined.Add" Size="Size.Small" OnClick="@((e) => OpenCrateUpdateTaskDialog())" />
     </div>
 </div>
 
-<MudTable Items="@tasks.OrderBy(x => x.DeadlineDate)" Hover="true" Elevation="0" Dense="true" Bordered="true">
+<MudTable Items="@tasks" Hover="true" Elevation="0" Dense="true" Bordered="true" RowsPerPage="20">
     <HeaderContent>
         <MudTh Style="font-weight: bold">#</MudTh>
         <MudTh Style="font-weight: bold"><MudTableSortLabel SortBy="new Func<TaskItemGet, object>(x=>x.Title)">Title</MudTableSortLabel></MudTh>
-        <MudTh Style="font-weight: bold">Description</MudTh>
+        <MudTh Style="font-weight: bold; width: 25rem">Description</MudTh>
         <MudTh Style="font-weight: bold">Due Date</MudTh>
         <MudTh Style="font-weight: bold">Complete Date</MudTh>
         <MudTh Style="font-weight: bold">Project</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd Style="width: 10px">
-            <MudCheckBox @bind-Checked="@context.IsComplete" Dense="true" UnCheckedColor="Color.Warning" Color="Color.Success" CheckedIcon="@Icons.Material.Filled.CheckCircle" UncheckedIcon="@Icons.Material.Filled.RadioButtonUnchecked"></MudCheckBox>
+            <MudCheckBox @onclick="(e) => CompleteTask(context, e)" @bind-Checked="@context.IsComplete" Dense="true" UnCheckedColor="Color.Default" Color="Color.Success" CheckedIcon="@Icons.Material.Filled.CheckCircle" UncheckedIcon="@Icons.Material.Filled.RadioButtonUnchecked"></MudCheckBox>
         </MudTd>
-        <MudTd>@context.Title</MudTd>
+        <MudTd>
+            <div style="display: flex; justify-content: flex-start; align-items: center;">
+                @if (context.Priority == "High")
+                {
+                    <MudIcon Class="mr-1" Icon="@Icons.Material.Filled.Flag" Color="Color.Error" Size="Size.Small" />
+                }
+                else if (context.Priority == "Medium")
+                {
+                    <MudIcon Class="mr-1" Icon="@Icons.Material.Filled.Flag" Color="Color.Warning" Size="Size.Small" />
+                }
+                else if (context.Priority == "Low")
+                {
+                    <MudIcon Class="mr-1" Icon="@Icons.Material.Filled.Flag" Color="Color.Default" Size="Size.Small" />
+                }
+                @context.Title
+            </div>
+        </MudTd>
         <MudTd>@context.Description</MudTd>
-        <MudTd>@context.DeadlineDate?.ToString("dd MMM yyyy")</MudTd>
+        <MudTd>
+            <div style="display: flex; justify-content: space-between; align-items: center">
+                @context.DeadlineDate?.ToString("dd MMM yyyy")
+                @if (context.DeadlineDate <= DateTime.Now && context.IsComplete != true)
+                {
+                    <MudIcon Icon="@Icons.Material.Filled.NotificationImportant" Color="Color.Error" Size="Size.Small" />
+                }
+            </div>
+        </MudTd>
         <MudTd>@context.CompleteDate?.ToString("dd MMM yyyy")</MudTd>
         <MudTd>@context.Project?.Number @context.Project?.Name</MudTd>
     </RowTemplate>
+    <PagerContent>
+        <MudTablePager RowsPerPageString="Tasks per page:" PageSizeOptions="new int[] {20, 30, 50}" />
+    </PagerContent>
 </MudTable>
 
 @code {
@@ -47,7 +80,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        tasks = (await TaskService.GetAllTasksByLoggedUser()).Data.Where(x => x.IsComplete == false).ToList();
+        tasks = (await TaskService.GetAllTasksByLoggedUser()).Data.Where(x => x.IsComplete == false).OrderBy(x => x.DeadlineDate).ToList();
     }
 
     public async Task OnToggledChanged(bool toggled)
@@ -56,11 +89,11 @@
 
         if (!ShowCompletedTasks)
         {
-            tasks = (await TaskService.GetAllTasksByLoggedUser()).Data.Where(x => x.IsComplete == false).ToList();
+            tasks = (await TaskService.GetAllTasksByLoggedUser()).Data.Where(x => x.IsComplete == false).OrderBy(x => x.DeadlineDate).ToList();
         }
         else
         {
-            tasks = (await TaskService.GetAllTasksByLoggedUser()).Data.Where(x => x.IsComplete == true).ToList();
+            tasks = (await TaskService.GetAllTasksByLoggedUser()).Data.OrderBy(x => x.IsComplete).ThenBy(x => x.DeadlineDate).ToList();
         }
     }
 
@@ -75,12 +108,26 @@
         {
             if (!ShowCompletedTasks)
             {
-                tasks = (await TaskService.GetAllTasksByLoggedUser()).Data.Where(x => x.IsComplete == false).ToList();
+                tasks = (await TaskService.GetAllTasksByLoggedUser()).Data.Where(x => x.IsComplete == false).OrderBy(x => x.DeadlineDate).ToList();
             }
             else
             {
-                tasks = (await TaskService.GetAllTasksByLoggedUser()).Data.Where(x => x.IsComplete == true).ToList();
-            };
+                tasks = (await TaskService.GetAllTasksByLoggedUser()).Data.OrderBy(x => x.IsComplete).ThenBy(x => x.DeadlineDate).ToList();
+            }
         }
+    }
+
+    async Task CompleteTask(TaskItemGet taskSelected, object checkedValue)
+    {
+        //await TaskService.CompleteTask(taskSelected);
+        if (!ShowCompletedTasks)
+        {
+            tasks = (await TaskService.GetAllTasksByLoggedUser()).Data.Where(x => x.IsComplete == false).OrderBy(x => x.DeadlineDate).ToList();
+        }
+        else
+        {
+            tasks = (await TaskService.GetAllTasksByLoggedUser()).Data.OrderBy(x => x.IsComplete).ThenBy(x => x.DeadlineDate).ToList();
+        }
+        Toaster.Success($"Task Completed");
     }
 }
