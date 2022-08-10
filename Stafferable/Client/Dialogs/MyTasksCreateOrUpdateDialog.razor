@@ -1,0 +1,143 @@
+﻿@inject ITaskServiceClient TaskService
+@inject IProjectServiceClient ProjectService
+@inject IToaster Toaster
+@inject IDialogService DialogService
+@inject ILocalStorageService LocalStorage
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using System.Security.Claims
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6" Align="Align.Center">
+            <MudIcon Icon="@Icons.Material.Filled.Task" Class="mb-1" />
+            New Task
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm>
+            <MudTextField T="string" Label="Title" Required="true" Variant="Variant.Filled" @bind-Value="task.Title" />
+            <MudTextField T="string" Label="Description" Lines="4" Required="true" Variant="Variant.Filled" @bind-Value="task.Description" />
+
+            <MudAutocomplete T="Guid?" Label="Select Project" @bind-Value="task.ProjectId" SearchFunc="@SearchFunc"
+                             Dense="true" Variant="Variant.Filled" Clearable="true" AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Default"
+                             ToStringFunc="@(projectId => Display(projectId))">
+                <NoItemsTemplate>
+                    <MudText Align="Align.Center" Class="px-4 py-1">
+                        No projects found
+                    </MudText>
+                </NoItemsTemplate>
+            </MudAutocomplete>
+
+            <MudDatePicker Culture="@CultureInfo.GetCultureInfo("pl-pl")" Label="Deadline" Variant="Variant.Filled" DisableToolbar="true" @bind-Date="task.DeadlineDate" />
+            <MudSelect Dense="true" T="string" Label="Priority" Variant="Variant.Filled" AnchorOrigin="Origin.BottomCenter" @bind-Value="task.Priority">
+                @foreach (var level in priorityLevels)
+                {
+                    <MudSelectItem T="string" Value="@level">@level</MudSelectItem>
+                }
+            </MudSelect>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <AuthorizeView>
+            @if (task.TaskItemId != Guid.Empty && @context.User.FindFirst(ClaimTypes.Role).Value == "Admin")
+            {
+                <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="OpenDeleteTaskDialog">Delete</MudButton>
+            }
+        </AuthorizeView>
+        <MudSpacer />
+        <MudButton Color="@btnColor" Variant="Variant.Filled" OnClick="Submit">@btnText</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [Parameter] public TaskItem task { get; set; } = new TaskItem();
+    [Parameter] public Project project { get; set; } = new Project();
+
+    string titleText = "";
+    string btnText = "";
+    Color btnColor = Color.Success;
+    List<Project> projects = new List<Project>();
+    AuthenticationState authstate;
+
+    private string[] priorityLevels =
+                    {
+        "Low", "Medium", "High"
+    };
+
+    protected override async Task OnParametersSetAsync()
+    {
+        authstate = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        projects = (await ProjectService.GetAllProjects()).Data;
+        if (task.TaskItemId == Guid.Empty)
+        {
+            titleText = "New Task";
+            btnText = "Add";
+        }
+        else
+        {
+            titleText = "Update Task Details";
+            btnColor = Color.Warning;
+            btnText = "Update";
+        }
+    }
+
+    void Cancel() => MudDialog.Cancel();
+
+    private async Task Submit()
+    {
+        if (task.TaskItemId == Guid.Empty)
+        {
+            task.AssignedToId = Convert.ToInt32(authstate.User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            var result = await TaskService.PostTask(task);
+            if (result.Success == true)
+            {
+                Toaster.Success(result.Message);
+            }
+            else
+            {
+                Toaster.Error(result.Message);
+            }
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        else
+        {
+            task.ProjectId = project.ProjectId;
+            await TaskService.UpdateTask(task);
+            Toaster.Success("Task Updated!");
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+    }
+
+    async Task OpenDeleteTaskDialog()
+    {
+        var parameters = new DialogParameters { ["taskItem"] = task };
+        var options = new DialogOptions { FullWidth = true, Position = DialogPosition.BottomCenter };
+        var dialog = DialogService.Show<TaskDeleteDialog>("Delete Task", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            MudDialog.Close(DialogResult.Ok(true));
+            Toaster.Success("Task Deleted");
+        }
+    }
+
+    private async Task<IEnumerable<Guid?>> SearchFunc(string inputValue)
+    {
+        if (string.IsNullOrEmpty(inputValue))
+            return projects.Select(x => (Guid?)x.ProjectId);
+        return projects.Where(x => x.Number.ToString().Contains(inputValue, StringComparison.InvariantCultureIgnoreCase) ||
+            x.Name.Contains(inputValue, StringComparison.InvariantCultureIgnoreCase)).Select(x => (Guid?)x.ProjectId);
+    }
+
+    private string Display(Guid? projectId)
+    {
+        var project = projects.FirstOrDefault(i => i.ProjectId == projectId);
+        return string.Join(", ", $"{project.Number} {project.Name}");
+    }
+
+}

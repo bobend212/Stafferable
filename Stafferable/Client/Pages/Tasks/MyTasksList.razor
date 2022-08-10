@@ -4,21 +4,25 @@
 @inject IToaster Toaster
 
 <div style="display: flex; align-items: center; justify-content: space-between">
-    <div>
-        <div style="display: inline-block">
+    <div style="display: inline-block">
+        <div>
             <MudText Typo="Typo.h4" Class="mb-2">My Tasks</MudText>
+        </div>
+        <div>
+            <MudSwitch ThumbIcon="@(ShowCompletedTasks==true ? Icons.Material.Filled.Done : Icons.Material.Filled.Close)" ThumbIconColor="@(ShowCompletedTasks==true ? Color.Success : Color.Error)"
+                       Label="@(ShowCompletedTasks ? "Hide Completed" : "Show Completed")" Checked="@ShowCompletedTasks" CheckedChanged="@((bool value) => OnToggledChanged(value))" />
         </div>
     </div>
 
     <div style="display: inline-block">
-        <MudFab Color="Color.Dark" StartIcon="@Icons.Outlined.Add" Label="New Task" IconSize="Size.Small" />
+        <MudFab Color="Color.Dark" StartIcon="@Icons.Outlined.Add" Label="New Task" IconSize="Size.Small" OnClick="@((e) => OpenCrateUpdateTaskDialog())" />
     </div>
 </div>
 
-<MudTable Items="@tasks" Hover="true" Elevation="0" Dense="true" Bordered="true">
+<MudTable Items="@tasks.OrderBy(x => x.DeadlineDate)" Hover="true" Elevation="0" Dense="true" Bordered="true">
     <HeaderContent>
         <MudTh Style="font-weight: bold">#</MudTh>
-        <MudTh Style="font-weight: bold">Title</MudTh>
+        <MudTh Style="font-weight: bold"><MudTableSortLabel SortBy="new Func<TaskItemGet, object>(x=>x.Title)">Title</MudTableSortLabel></MudTh>
         <MudTh Style="font-weight: bold">Description</MudTh>
         <MudTh Style="font-weight: bold">Due Date</MudTh>
         <MudTh Style="font-weight: bold">Complete Date</MudTh>
@@ -39,8 +43,44 @@
 @code {
     List<TaskItemGet> tasks = new List<TaskItemGet>();
 
+    public bool ShowCompletedTasks { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
-        tasks = (await TaskService.GetAllTasksByLoggedUser()).Data;
+        tasks = (await TaskService.GetAllTasksByLoggedUser()).Data.Where(x => x.IsComplete == false).ToList();
+    }
+
+    public async Task OnToggledChanged(bool toggled)
+    {
+        ShowCompletedTasks = toggled;
+
+        if (!ShowCompletedTasks)
+        {
+            tasks = (await TaskService.GetAllTasksByLoggedUser()).Data.Where(x => x.IsComplete == false).ToList();
+        }
+        else
+        {
+            tasks = (await TaskService.GetAllTasksByLoggedUser()).Data.Where(x => x.IsComplete == true).ToList();
+        }
+    }
+
+    async Task OpenCrateUpdateTaskDialog()
+    {
+        var options = new DialogOptions { FullWidth = true, Position = DialogPosition.TopCenter };
+
+        var dialog = DialogService.Show<MyTasksCreateOrUpdateDialog>("New Task", options);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled)
+        {
+            if (!ShowCompletedTasks)
+            {
+                tasks = (await TaskService.GetAllTasksByLoggedUser()).Data.Where(x => x.IsComplete == false).ToList();
+            }
+            else
+            {
+                tasks = (await TaskService.GetAllTasksByLoggedUser()).Data.Where(x => x.IsComplete == true).ToList();
+            };
+        }
     }
 }
