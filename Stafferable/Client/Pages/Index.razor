@@ -1,9 +1,72 @@
 ﻿@page "/"
+@inject ITaskServiceClient TaskService
 
 <PageTitle>Stafferable - Home</PageTitle>
 
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+<hr />
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+<div class="row mb-2">
+    <div class="col">
+        <MudCard>
+            <MudCardContent>
+                <MudText>Story of the day1</MudText>
+                <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </div>
+    <div class="col">
+        <MudCard>
+            <MudCardContent>
+                <MudText>Story of the day2</MudText>
+                <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </div>
+</div>
+<div class="w-100"></div>
+<div class="row mb-2">
+    <div class="col">
+        <MudCard>
+            <MudCardContent>
+                <MudText>Story of the day</MudText>
+                <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </div>
+    <div class="col">
+        <MudCard>
+            <MudCardContent>
+                <MudText>Story of the day</MudText>
+                <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </div>
+</div>
+
+<DashboardCharts MyTasks="tasks"/>
+
+@code {
+    List<TaskItemGet> tasks = new List<TaskItemGet>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        tasks = (await TaskService.GetAllTasksByLoggedUser()).Data;
+    }
+}
+
+

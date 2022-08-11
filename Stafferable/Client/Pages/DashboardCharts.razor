@@ -1,0 +1,26 @@
+﻿<MudPaper Class="pa-4">
+    <MudChart ChartType="ChartType.Donut" Width="300px" Height="300px"
+              InputData="@data" InputLabels="@labels">
+        <CustomGraphics>
+            <text class="donut-inner-text" x="47%" y="35%" dominant-baseline="middle" text-anchor="middle" fill="black" font-size="2">Total</text>
+            <text class="donut-inner-text" x="47%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="black" font-size="5">@data.Sum().ToString()</text>
+        </CustomGraphics>
+    </MudChart>
+</MudPaper>
+
+@code {
+    [Parameter]
+    public List<TaskItemGet> MyTasks { get; set; }
+
+    string[] labels;
+    double[] data;
+
+    protected override void OnParametersSet()
+    {
+        labels = MyTasks.GroupBy(x => x.TaskStatus).Select(x => x.Key).ToArray();
+
+        data = MyTasks
+            .GroupBy(x => x.TaskStatus).Select(x => (double)x.Count()).ToArray();
+    }
+
+}
