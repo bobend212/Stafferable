@@ -3,33 +3,38 @@
 @inject IDialogService DialogService
 @inject IToaster Toaster
 
-<div style="display: flex; align-items: center; justify-content: space-between">
-    <div style="display: inline-block">
-        <MudText Typo="Typo.h4" Class="mb-2">My Tasks</MudText>
-    </div>
+<div style="display: flex; align-items: end; justify-content: space-between">
+    <MudText Typo="Typo.h4">My Tasks</MudText>
 
-    <div style="display: inline-block; position: sticky">
-        <MudPaper Class="p-1 mr-2" style="display: inline-block">
-            <MudText style="display: inline" Typo="Typo.body1">High <MudIcon Class="mr-1" Icon="@Icons.Material.Filled.Flag" Color="Color.Error" Size="Size.Small" /> </MudText>
-            <MudText style="display: inline" Typo="Typo.body1">Medium <MudIcon Class="mr-1" Icon="@Icons.Material.Filled.Flag" Color="Color.Warning" Size="Size.Small" /> </MudText>
-            <MudText style="display: inline" Typo="Typo.body1">Low <MudIcon Class="mr-1" Icon="@Icons.Material.Filled.Flag" Color="Color.Default" Size="Size.Small" /> </MudText>
-            <MudText style="display: inline" Typo="Typo.body1">Deadline <MudIcon Icon="@Icons.Material.Filled.NotificationImportant" Color="Color.Error" Size="Size.Small" /> </MudText>
-        </MudPaper>
+    <p>
+        <MudText style="display: inline" Typo="Typo.body1">High <MudIcon Class="mr-1" Icon="@Icons.Material.Filled.Flag" Color="Color.Error" Size="Size.Small" /> </MudText>
+        <MudText style="display: inline" Typo="Typo.body1">Medium <MudIcon Class="mr-1" Icon="@Icons.Material.Filled.Flag" Color="Color.Warning" Size="Size.Small" /> </MudText>
+        <MudText style="display: inline" Typo="Typo.body1">Low <MudIcon Class="mr-1" Icon="@Icons.Material.Filled.Flag" Color="Color.Default" Size="Size.Small" /> </MudText>
+        <MudText style="display: inline" Typo="Typo.body1">Deadline <MudIcon Icon="@Icons.Material.Filled.NotificationImportant" Color="Color.Error" Size="Size.Small" /> </MudText>
+    </p>
 
-        <MudSwitch Style="width: 200px" ThumbIcon="@(ShowCompletedTasks==true ? Icons.Material.Filled.FilterAlt : Icons.Material.Filled.FilterAltOff)" ThumbIconColor="@(ShowCompletedTasks==true ? Color.Success : Color.Error)"
-                   Label="@(ShowCompletedTasks ? "Hide Completed" : "Show Completed")" Checked="@ShowCompletedTasks" CheckedChanged="@((bool value) => OnToggledChanged(value))" />
-
-        <MudFab Color="Color.Dark" StartIcon="@Icons.Outlined.Add" Size="Size.Small" OnClick="@((e) => OpenCrateUpdateTaskDialog())" />
-    </div>
+    <MudPaper Elevation="2">
+        <MudToolBar Class="p-3" Style="width: 600px">
+            <p>
+                <MudTextField Clearable="true" @bind-Value="searchString1" Placeholder="Filter by Project" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"></MudTextField>
+            </p>
+            <MudSpacer />
+            <MudSwitch Class="ml-2" Style="width: 200px" ThumbIcon="@(ShowCompletedTasks==true ? Icons.Material.Filled.FilterAlt : Icons.Material.Filled.FilterAltOff)" ThumbIconColor="@(ShowCompletedTasks==true ? Color.Success : Color.Error)"
+                       Label="@(ShowCompletedTasks ? "Hide Completed" : "Show Completed")" Checked="@ShowCompletedTasks"
+                       CheckedChanged="@((bool value) => OnToggledChanged(value))" />
+            <MudSpacer />
+            <MudFab Color="Color.Dark" StartIcon="@Icons.Outlined.Add" Size="Size.Small" OnClick="@((e) => OpenCrateUpdateTaskDialog())" />
+        </MudToolBar>
+    </MudPaper>
 </div>
 
-<MudTable Items="@tasks" Hover="true" Elevation="0" Dense="true" Bordered="true" RowsPerPage="20">
+<MudTable Items="@tasks" Hover="true" Elevation="0" Dense="true" Bordered="true" Filter="new Func<TaskItemGet,bool>(FilterFunc1)">
     <HeaderContent>
         <MudTh Style="font-weight: bold">#</MudTh>
         <MudTh Style="font-weight: bold"><MudTableSortLabel SortBy="new Func<TaskItemGet, object>(x=>x.Title)">Title</MudTableSortLabel></MudTh>
         <MudTh Style="font-weight: bold; width: 25rem">Description</MudTh>
-        <MudTh Style="font-weight: bold">Due Date</MudTh>
-        <MudTh Style="font-weight: bold">Complete Date</MudTh>
+        <MudTh Style="font-weight: bold"><MudTableSortLabel SortBy="new Func<TaskItemGet, object>(x=>x.DeadlineDate)">Due Date</MudTableSortLabel></MudTh>
+        <MudTh Style="font-weight: bold"><MudTableSortLabel SortBy="new Func<TaskItemGet, object>(x=>x.CompleteDate)">Complete Date</MudTableSortLabel></MudTh>
         <MudTh Style="font-weight: bold">Project</MudTh>
     </HeaderContent>
     <RowTemplate>
@@ -78,6 +83,8 @@
     List<TaskItemGet> tasks = new List<TaskItemGet>();
 
     public bool ShowCompletedTasks { get; set; }
+
+    private string searchString1 = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -134,5 +141,20 @@
             tasks = (await TaskService.GetAllTasksByLoggedUser()).Data.OrderBy(x => x.IsComplete).ThenBy(x => x.DeadlineDate).ToList();
         }
         Toaster.Success($"Task Completed");
+    }
+
+    private bool FilterFunc1(TaskItemGet element) => FilterFunc(element, searchString1);
+
+    private bool FilterFunc(TaskItemGet element, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if ($"{element.Project?.Number.ToString()}".Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if ($"{element.Project?.Name}".Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if ($"{element.Project?.Number.ToString()} {element.Project?.Name}".Contains(searchString))
+            return true;
+        return false;
     }
 }
