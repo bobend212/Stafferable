@@ -6,8 +6,6 @@
 <div style="display: flex; align-items: center; justify-content: space-between">
     <div style="display: inline-block">
         <MudText Typo="Typo.h4" Class="mb-2">My Tasks</MudText>
-
-
     </div>
 
     <div style="display: inline-block; position: sticky">
@@ -68,6 +66,9 @@
         <MudTd>@context.CompleteDate?.ToString("dd MMM yyyy")</MudTd>
         <MudTd>@context.Project?.Number @context.Project?.Name</MudTd>
     </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Tasks not found.</MudText>
+    </NoRecordsContent>
     <PagerContent>
         <MudTablePager RowsPerPageString="Tasks per page:" PageSizeOptions="new int[] {20, 30, 50}" />
     </PagerContent>
@@ -119,7 +120,11 @@
 
     async Task CompleteTask(TaskItemGet taskSelected, object checkedValue)
     {
-        //await TaskService.CompleteTask(taskSelected);
+        var taskItem = new TaskItem
+            {
+                TaskItemId = taskSelected.TaskItemId
+            };
+        await TaskService.CompleteTask(taskItem);
         if (!ShowCompletedTasks)
         {
             tasks = (await TaskService.GetAllTasksByLoggedUser()).Data.Where(x => x.IsComplete == false).OrderBy(x => x.DeadlineDate).ToList();
