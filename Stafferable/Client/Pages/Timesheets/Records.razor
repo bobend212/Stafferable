@@ -40,10 +40,9 @@
 @if (records != null)
 {
     <MudTabs Elevation="4" ApplyEffectsToContainer="true" PanelClass="pa-3" Rounded="true" Centered="true" Border="true">
-        @foreach (var item in weekCollection.OrderBy(x => x).Distinct())
+        @foreach (var item in weekCollection)
         {
             <MudTabPanel Text="@item.ToString()" ToolTip="Week Number">
-
                 <MudTable Elevation="4" Hover="true" Breakpoint="Breakpoint.Sm" FixedHeader="true"
                   Items="@records.Where(x => x.WeekNo == item)"
                   Virtualize="false"
@@ -62,7 +61,11 @@
                         <MudTh></MudTh>
                     </HeaderContent>
                     <GroupHeaderTemplate>
-                        <MudTh Class="mud-table-cell-custom-group" colspan="6">@($"{context.Key}")</MudTh>
+                        <MudTh Class="mud-table-cell-custom-group" colspan="6">
+                            @(
+                        $"{context.Key}"
+                        )
+                        </MudTh>
                     </GroupHeaderTemplate>
                     <RowTemplate>
                         <MudTd DataLabel=""></MudTd>
@@ -89,7 +92,7 @@
 }
 else
 {
-    <h4 class="text-danger">No records found.</h4>
+    <h4 class="text-danger text-center">No records found.</h4>
 }
 
 @code {
@@ -102,7 +105,7 @@ else
     List<int> weekCollection = new List<int>();
     bool success;
     string[] errors = { };
-    MudForm form;
+    MudForm? form;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -116,13 +119,8 @@ else
 
     private List<int> WeekGrouping(List<TimesheetRecord> rec)
     {
-        var tempList = rec.OrderBy(x => x.WeekNo).Select(x => x.WeekNo).Distinct();
-        foreach (var item in tempList)
-        {
-            weekCollection.Add(item);
-        }
-
-        return weekCollection;
+        var tempList = rec.OrderBy(x => x.WeekNo).Select(x => x.WeekNo).Distinct().ToList();
+        return tempList;
     }
 
     private TableGroupDefinition<TimesheetRecord> _groupDefinition = new()
@@ -161,6 +159,10 @@ else
             records = (await TimesheetService.GetTimesheetRecordsByCard(CardId)).Data;
             currentCard = (await TimesheetService.GetSingleCard(CardId)).Data;
             Toaster.Success("Record Removed");
+            if (records != null)
+            {
+                weekCollection = WeekGrouping(records);
+            }
         }
     }
 

@@ -27,7 +27,7 @@
                 <MudTh></MudTh>
                 <MudTh Style="font-weight: bold; text-align: center">Title</MudTh>
                 <MudTh Style="font-weight: bold; text-align: center">Description</MudTh>
-                <MudTh Style="font-weight: bold; text-align: center">AssignedTo</MudTh>
+                <MudTh Style="font-weight: bold; text-align: center">Assigned To</MudTh>
                 <MudTh Style="font-weight: bold; text-align: center">Deadline</MudTh>
                 <MudTh Style="font-weight: bold; text-align: center">Complete Date</MudTh>
                 <MudTh Style="font-weight: bold; text-align: center">Priority</MudTh>
@@ -46,21 +46,21 @@
                         <MudCheckBox @onclick="(e) => CompleteTask(context, e)" @bind-Checked="context.IsComplete" Dense="true" Color="Color.Success" Disabled="context.IsComplete"></MudCheckBox>
                         @if (context.DeadlineDate <= DateTime.Now && context.IsComplete != true)
                         {
-                        <MudIcon Icon="@Icons.Material.Filled.Warning" Title="Overdue" Color="Color.Error" />
+                            <MudIcon Icon="@Icons.Material.Filled.Warning" Title="Overdue" Color="Color.Error" />
                         }
-                </div>
-            </MudTd>
-            <MudTd Style="text-align: center">@context.Title</MudTd>
-            <MudTd Style="text-align: center">@context.Description</MudTd>
-            <MudTd Style="text-align: center">@context.AssignedTo?.FName @context.AssignedTo?.LName</MudTd>
-            <MudTd Style="text-align: center">@context.DeadlineDate?.ToString("d MMMM yyyy")</MudTd>
-            <MudTd Style="text-align: center">@context.CompleteDate?.ToString("d MMMM yyyy")</MudTd>
-            <MudTd Style="text-align: center">@context.Priority</MudTd>
-            <MudTd Style="text-align: center">
-                <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Warning" Size="Size.Small" OnClick="@((e) => OpenCrateUpdateTaskDialog2(@context))"></MudIconButton>
-            </MudTd>
-        </RowTemplate>
-    </MudTable>
+                    </div>
+                </MudTd>
+                <MudTd Style="text-align: center">@context.Title</MudTd>
+                <MudTd Style="text-align: center">@context.Description</MudTd>
+                <MudTd Style="text-align: center">@context.AssignedTo?.FName @context.AssignedTo?.LName</MudTd>
+                <MudTd Style="text-align: center">@context.DeadlineDate?.ToString("d MMMM yyyy")</MudTd>
+                <MudTd Style="text-align: center">@context.CompleteDate?.ToString("d MMMM yyyy")</MudTd>
+                <MudTd Style="text-align: center">@context.Priority</MudTd>
+                <MudTd Style="text-align: center">
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Warning" Size="Size.Small" OnClick="@((e) => OpenCrateUpdateTaskDialog2(@context))"></MudIconButton>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
     }
 </div>
 
